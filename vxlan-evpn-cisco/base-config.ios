@@ -1,0 +1,90 @@
+! SPINE-1
+
+hostname spine-1
+interface Ethernet1/1
+  description Link to spine-2
+  mtu 9192
+  ip address 192.168.0.0/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/2
+  description Link to leaf-1
+  mtu 9192
+  ip address 192.168.0.2/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/3
+  description Link to leaf-2
+  mtu 9192
+  ip address 192.168.0.4/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+! SPINE-2
+hostname spine-2
+interface Ethernet1/1
+  description Link to spine-1
+  mtu 9192
+  ip address 192.168.0.1/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/2
+  description Link to leaf-1
+  mtu 9192
+  ip address 192.168.0.6/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/3
+  description Link to leaf-2
+  mtu 9192
+  ip address 192.168.0.8/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+
+! LEAF-1
+hostname leaf-1
+interface Ethernet1/1
+  description Link to spine-1
+  mtu 9192
+  ip address 192.168.0.3/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/3
+  description Link to spine-2
+  mtu 9192
+  ip address 192.168.0.7/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+
+! LEAF-2
+hostname leaf-2
+interface Ethernet1/1
+  description Link to spine-1
+  mtu 9192
+  ip address 192.168.0.5/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
+
+interface Ethernet1/3
+  description Link to spine-2
+  mtu 9192
+  ip address 192.168.0.9/31
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  no shutdown
