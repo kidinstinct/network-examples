@@ -7,6 +7,18 @@ wr
 
 ! SPINE-1
 hostname spine-1
+
+interface loopback0
+  ip address 192.168.255.1/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description Loopback for Anycast RP
+  ip address 192.168.255.100/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
 interface Ethernet1/1
   description Link to spine-2
   mtu 9192
@@ -34,8 +46,24 @@ interface Ethernet1/3
   ip router ospf UNDERLAY area 0.0.0.0
   no shutdown
 
+ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
+ip pim anycast-rp 192.168.255.100 192.168.255.1
+ip pim anycast-rp 192.168.255.100 192.168.255.2
+
 ! SPINE-2
 hostname spine-2
+
+interface loopback0
+  ip address 192.168.255.2/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description Loopback for Anycast RP
+  ip address 192.168.255.100/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
 interface Ethernet1/1
   description Link to spine-1
   mtu 9192
@@ -62,10 +90,20 @@ interface Ethernet1/3
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   no shutdown
+
+ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
+ip pim anycast-rp 192.168.255.100 192.168.255.1
+ip pim anycast-rp 192.168.255.100 192.168.255.2
 
 
 ! LEAF-1
 hostname leaf-1
+
+interface loopback0
+  ip address 192.168.255.3/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
 interface Ethernet1/1
   description Link to spine-1
   mtu 9192
@@ -83,10 +121,18 @@ interface Ethernet1/2
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   no shutdown
+
+ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
 
 
 ! LEAF-2
 hostname leaf-2
+
+interface loopback0
+  ip address 192.168.255.4/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
 interface Ethernet1/1
   description Link to spine-1
   mtu 9192
@@ -104,3 +150,5 @@ interface Ethernet1/2
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   no shutdown
+
+ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
