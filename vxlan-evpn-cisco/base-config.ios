@@ -227,3 +227,54 @@ interface Ethernet1/2
   no shutdown
 
 ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
+
+
+# R1
+hostname R1
+
+interface GigabitEthernet0/0
+ no ip redirects
+ no ip proxy-arp
+ duplex auto
+ speed auto
+ media-type rj45
+ no shut
+!
+interface GigabitEthernet0/0.12
+ encapsulation dot1Q 12
+ ip address 198.0.0.0 255.255.255.254
+ no ip redirects
+ no ip proxy-arp
+!
+interface GigabitEthernet0/0.13
+ encapsulation dot1Q 13
+ ip address 198.0.0.2 255.255.255.254
+ no ip redirects
+ no ip proxy-arp
+!
+
+
+# R2
+hostname R2
+
+interface GigabitEthernet0/0
+ ip address 198.0.0.1 255.255.255.254
+ no ip redirects
+ no ip proxy-arp
+ duplex auto
+ speed auto
+ media-type rj45
+ no shut
+
+
+# R3
+hostname R3
+
+interface GigabitEthernet0/0
+ ip address 198.0.0.3 255.255.255.254
+ no ip redirects
+ no ip proxy-arp
+ duplex auto
+ speed auto
+ media-type rj45
+ no shut
