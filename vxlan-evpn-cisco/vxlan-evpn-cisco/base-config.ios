@@ -10,7 +10,8 @@ hostname spine-1
 feature pim
 feature ospf
 feature interface-vlan
-
+feature bgp
+nv overlay evpn
 
 interface loopback0
   ip address 192.168.255.1/32
@@ -57,12 +58,23 @@ ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
 ip pim anycast-rp 192.168.255.100 192.168.255.1
 ip pim anycast-rp 192.168.255.100 192.168.255.2
 
+router bgp 65000
+  router-id 192.168.255.1
+  address-family l2vpn evpn
+  neighbor 192.168.255.0/24
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
 ! SPINE-2
 hostname spine-2
 feature pim
 feature ospf
 feature interface-vlan
-
+feature bgp
+nv overlay evpn
 
 interface loopback0
   ip address 192.168.255.2/32
@@ -109,12 +121,24 @@ ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
 ip pim anycast-rp 192.168.255.100 192.168.255.1
 ip pim anycast-rp 192.168.255.100 192.168.255.2
 
+router bgp 65000
+  router-id 192.168.255.2
+  address-family l2vpn evpn
+  neighbor 192.168.255.0/24
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
 
 ! LEAF-1
 hostname leaf-1
 feature pim
 feature ospf
 feature interface-vlan
+feature bgp
+nv overlay evpn
 
 router ospf UNDERLAY
   router-id 192.168.255.3
@@ -146,12 +170,43 @@ interface Ethernet1/2
 
 ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
 
+router bgp 65000
+  router-id 192.168.255.3
+  address-family l2vpn evpn
+  neighbor 192.168.255.1
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+  neighbor 192.168.255.2
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+
+vlan 100
+
+interface Vlan100
+  no shutdown
+  no ip redirects
+  ip address 198.100.100.1/24
+  no shut
+
+interface Ethernet1/9
+  description to SRV1
+  switchport
+  switchport access vlan 100
+  spanning-tree port type edge
+  no shutdown
+
+
 
 ! LEAF-2
 hostname leaf-2
 feature pim
 feature ospf
 feature interface-vlan
+feature bgp
+nv overlay evpn
 
 router ospf UNDERLAY
   router-id 192.168.255.4
@@ -183,12 +238,43 @@ interface Ethernet1/2
 
 ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
 
+router bgp 65000
+  router-id 192.168.255.4
+  address-family l2vpn evpn
+  neighbor 192.168.255.1
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+  neighbor 192.168.255.2
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+
+vlan 100
+
+interface Vlan100
+  no shutdown
+  no ip redirects
+  ip address 198.100.100.1/24
+  no shut
+
+interface Ethernet1/9
+  description to SRV2
+  switchport
+  switchport access vlan 100
+  spanning-tree port type edge
+  no shutdown
+
+
 
 ! LEAF-3
 hostname leaf-3
 feature pim
 feature ospf
 feature interface-vlan
+feature bgp
+nv overlay evpn
 
 router ospf UNDERLAY
   router-id 192.168.255.5
@@ -219,6 +305,35 @@ interface Ethernet1/2
   no shutdown
 
 ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
+
+router bgp 65000
+  router-id 192.168.255.5
+  address-family l2vpn evpn
+  neighbor 192.168.255.1
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+  neighbor 192.168.255.2
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+
+vlan 101
+
+interface Vlan101
+  no shutdown
+  no ip redirects
+  ip address 198.100.101.1/24
+  no shut
+
+interface Ethernet1/9
+  description to SRV3
+  switchport
+  switchport access vlan 101
+  spanning-tree port type edge
+  no shutdown
+
 
 
 # R1
