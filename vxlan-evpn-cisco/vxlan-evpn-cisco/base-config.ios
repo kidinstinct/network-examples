@@ -13,6 +13,9 @@ feature interface-vlan
 feature bgp
 nv overlay evpn
 
+router ospf UNDERLAY
+  router-id 192.168.255.1
+
 interface loopback0
   ip address 192.168.255.1/32
   ip router ospf UNDERLAY area 0.0.0.0
@@ -139,6 +142,8 @@ feature ospf
 feature interface-vlan
 feature bgp
 nv overlay evpn
+feature vn-segment-vlan-based
+feature fabric forwarding
 
 router ospf UNDERLAY
   router-id 192.168.255.3
@@ -184,12 +189,8 @@ router bgp 65000
       send-community extended
 
 vlan 100
-
-interface Vlan100
-  no shutdown
-  no ip redirects
-  ip address 198.100.100.1/24
-  no shut
+vlan 100
+  vn-segment 100100
 
 interface Ethernet1/9
   description to SRV1
@@ -197,6 +198,58 @@ interface Ethernet1/9
   switchport access vlan 100
   spanning-tree port type edge
   no shutdown
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 100100
+    mcast-group 239.0.0.100
+    suppress-arp ! not supported on NXOSv9k
+
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vlan 501
+  vn-segment 50001
+
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+
+interface Vlan100
+  no shutdown
+  vrf member TENANT1
+  ip address 198.100.100.1/24 tag 100
+  ip pim sparse-mode
+  mtu 9216
+  fabric forwarding mode anycast-gateway
+
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface nve1
+  member vni 50001 associate-vrf
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+
+router bgp 65000
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+
+
 
 
 
@@ -207,6 +260,8 @@ feature ospf
 feature interface-vlan
 feature bgp
 nv overlay evpn
+feature vn-segment-vlan-based
+feature fabric forwarding
 
 router ospf UNDERLAY
   router-id 192.168.255.4
@@ -252,19 +307,91 @@ router bgp 65000
       send-community extended
 
 vlan 100
+  vn-segment 100100
+vlan 101
+  vn-segment 100101
 
-interface Vlan100
-  no shutdown
-  no ip redirects
-  ip address 198.100.100.1/24
-  no shut
-
-interface Ethernet1/9
+interface Ethernet1/8
   description to SRV2
   switchport
   switchport access vlan 100
   spanning-tree port type edge
   no shutdown
+
+interface Ethernet1/9
+  description to SRV4
+  switchport
+  switchport access vlan 101
+  spanning-tree port type edge
+  no shutdown
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 100100
+    mcast-group 239.0.0.100
+    suppress-arp ! not supported on NXOSv9k
+  member vni 100101
+    mcast-group 239.0.0.101
+    suppress-arp ! not supported on NXOSv9k
+
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vlan 501
+  vn-segment 50001
+
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+
+interface Vlan100
+  no shutdown
+  vrf member TENANT1
+  ip address 198.100.100.1/24 tag 100
+  ip pim sparse-mode
+  mtu 9216
+  fabric forwarding mode anycast-gateway
+
+interface Vlan101
+  no shutdown
+  vrf member TENANT1
+  ip address 198.100.101.1/24 tag 100
+  ip pim sparse-mode
+  mtu 9216
+  fabric forwarding mode anycast-gateway
+
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface nve1
+  member vni 50001 associate-vrf
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+
+router bgp 65000
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+
+
+
 
 
 
@@ -275,6 +402,8 @@ feature ospf
 feature interface-vlan
 feature bgp
 nv overlay evpn
+feature vn-segment-vlan-based
+feature fabric forwarding
 
 router ospf UNDERLAY
   router-id 192.168.255.5
@@ -320,12 +449,8 @@ router bgp 65000
       send-community extended
 
 vlan 101
-
-interface Vlan101
-  no shutdown
-  no ip redirects
-  ip address 198.100.101.1/24
-  no shut
+vlan 101
+  vn-segment 100101
 
 interface Ethernet1/9
   description to SRV3
@@ -333,6 +458,59 @@ interface Ethernet1/9
   switchport access vlan 101
   spanning-tree port type edge
   no shutdown
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 100101
+    mcast-group 239.0.0.101
+    suppress-arp ! not supported on NXOSv9k
+
+evpn
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vlan 501
+  vn-segment 50001
+
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+
+interface Vlan101
+  no shutdown
+  vrf member TENANT1
+  ip address 198.100.101.1/24 tag 100
+  ip pim sparse-mode
+  mtu 9216
+  fabric forwarding mode anycast-gateway
+
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface nve1
+  member vni 50001 associate-vrf
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+
+router bgp 65000
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+
+
+
 
 
 
