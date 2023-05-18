@@ -59,15 +59,15 @@ vlan 100
 vlan 200
   vn-segment 100200
 
-interface Ethernet1/9
+interface Ethernet1/8
   description to SRV1
   switchport
   switchport access vlan 100
   spanning-tree port type edge
   no shutdown
 
-interface Ethernet1/22
-  description to SRV5
+interface Ethernet1/9
+  description to SRV6
   switchport
   switchport access vlan 200
   spanning-tree port type edge
