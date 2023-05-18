@@ -17,20 +17,6 @@ interface loopback0
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
-spanning-tree vlan 1-3967 priority 0
-
-interface Ethernet1/22
-  switchport
-  switchport access vlan 200
-  channel-group 200 mode active
-  no shutdown
-
-interface port-channel200
-  switchport
-  switchport access vlan 200
-  spanning-tree port type edge
-  vpc 200
-
 interface Ethernet1/1
   description Link to spine-1
   mtu 9192
@@ -77,6 +63,13 @@ interface Ethernet1/9
   description to SRV1
   switchport
   switchport access vlan 100
+  spanning-tree port type edge
+  no shutdown
+
+interface Ethernet1/22
+  description to SRV5
+  switchport
+  switchport access vlan 200
   spanning-tree port type edge
   no shutdown
 
