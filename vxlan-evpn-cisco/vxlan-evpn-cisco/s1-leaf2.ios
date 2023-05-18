@@ -6,6 +6,7 @@ feature interface-vlan
 feature bgp
 nv overlay evpn
 feature vn-segment-vlan-based
+feature nv overlay
 feature fabric forwarding
 
 router ospf UNDERLAY
@@ -45,6 +46,7 @@ router bgp 65000
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn
+      send-community extended
   neighbor 192.168.255.2
     remote-as 65000
     update-source loopback0

@@ -50,6 +50,16 @@ interface Ethernet1/3
   ip pim sparse-mode
   no shutdown
 
+interface Ethernet1/4
+  description Link to leaf-4
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
 ip pim rp-address 192.168.255.100 group-list 224.1.1.1/16
 ip pim anycast-rp 192.168.255.100 192.168.255.1
 ip pim anycast-rp 192.168.255.100 192.168.255.2
