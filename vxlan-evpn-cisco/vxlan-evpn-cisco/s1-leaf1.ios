@@ -8,70 +8,16 @@ nv overlay evpn
 feature vn-segment-vlan-based
 feature nv overlay
 feature fabric forwarding
-feature vpc
-feature lacp
 
 router ospf UNDERLAY
   router-id 192.168.255.3
 
-interface mgmt0
-  vrf member management
-  ip address 198.0.0.1/30
-
 interface loopback0
   ip address 192.168.255.3/32
-  ip add 192.168.255.104/32 secondary
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 spanning-tree vlan 1-3967 priority 0
-
-vpc domain 1
-  role priority 100
-  system-priority 100
-  peer-keepalive destination 198.0.0.2 source vrf management
-  delay restore 120
-  peer-gateway
-  layer3 peer-router
-  auto-recovery reload-delay 120
-  fast-convergence
-
-interface Ethernet1/11
-  description to s1-leaf4 Ethernet1/11 - Port-channel1 - vPC peer-link
-  switchport
-  switchport mode trunk
-  spanning-tree port type network
-  channel-group 1 mode active
-  no shutdown
-
-interface Ethernet1/12
-  description to s1-leaf4 Ethernet1/12- Port-channel1 - vPC peer-link
-  switchport
-  switchport mode trunk
-  spanning-tree port type network
-  channel-group 1 mode active
-  no shutdown
-
-interface port-channel1
-  description vPC peer-link
-  switchport
-  switchport mode trunk
-  spanning-tree port type network
-  vpc peer-link
-
-vlan 1000
-system nve infra-vlans 1000
-
-interface Vlan1000
-  no shutdown
-  mtu 9216
-  no ip redirects
-  ip address 198.1.0.1/30
-  no ipv6 redirects
-  ip ospf cost 10
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
 
 interface Ethernet1/22
   switchport
