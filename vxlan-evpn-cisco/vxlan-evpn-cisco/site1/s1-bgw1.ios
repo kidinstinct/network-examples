@@ -1,4 +1,4 @@
-hostname s1-border1
+hostname s1-bgw1
 
 feature pim
 feature ospf
@@ -9,7 +9,6 @@ feature vn-segment-vlan-based
 feature nv overlay
 nv overlay evpn
 feature fabric forwarding
-feature isis
 
 route-map DIRECT-TO-OSPF permit 10
   match interface Ethernet1/5
@@ -49,7 +48,7 @@ interface Ethernet1/2
 interface Ethernet1/5
   description Link to s2-border1
   mtu 9192
-  ip add 198.0.0.1/30
+  ip add 198.0.0.2/30
   no ip redirects
   evpn multisite dci-tracking
   no shutdown
@@ -87,8 +86,8 @@ router bgp 65000
     address-family l2vpn evpn
       send-community extended
       rewrite-evpn-rt-asn
-  neighbor 198.0.0.2
-    remote-as 65001
+  neighbor 198.0.0.1
+    remote-as 651001
     address-family ipv4 unicast
 
 vlan 100
@@ -155,3 +154,7 @@ router bgp 65000
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+      exit
+    exit
+  exit
+

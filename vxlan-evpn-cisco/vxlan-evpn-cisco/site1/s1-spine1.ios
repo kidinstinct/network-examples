@@ -83,3 +83,6 @@ router bgp 65000
     address-family l2vpn evpn
       send-community extended
       route-reflector-client
+      exit
+    exit
+  exit

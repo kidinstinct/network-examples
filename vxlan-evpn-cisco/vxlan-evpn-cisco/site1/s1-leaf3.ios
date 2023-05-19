@@ -123,3 +123,7 @@ router bgp 65000
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+      exit
+    exit
+  exit
+
