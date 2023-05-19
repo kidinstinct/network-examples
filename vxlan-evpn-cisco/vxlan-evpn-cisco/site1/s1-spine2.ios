@@ -1,0 +1,85 @@
+hostname s1-spine2
+
+feature pim
+feature ospf
+feature interface-vlan
+feature bgp
+nv overlay evpn
+
+router ospf UNDERLAY
+  router-id 192.168.255.2
+
+interface loopback0
+  ip address 192.168.255.2/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description Loopback for Anycast RP
+  ip address 192.168.255.100/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface Ethernet1/1
+  description Link to leaf-1
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  description Link to leaf-2
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  description Link to leaf-3
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/4
+  description Link to leaf-4
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/5
+  description Link to border1
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
+ip pim anycast-rp 192.168.255.100 192.168.255.1
+ip pim anycast-rp 192.168.255.100 192.168.255.2
+
+router bgp 65000
+  router-id 192.168.255.2
+  address-family l2vpn evpn
+  neighbor 192.168.255.0/24
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client

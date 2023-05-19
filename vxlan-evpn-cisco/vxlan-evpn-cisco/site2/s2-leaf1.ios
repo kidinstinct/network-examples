@@ -1,0 +1,113 @@
+hostname s2-leaf1
+
+feature pim
+feature ospf
+feature interface-vlan
+feature bgp
+feature vn-segment-vlan-based
+feature nv overlay
+nv overlay evpn
+feature fabric forwarding
+
+router ospf UNDERLAY
+  router-id 192.168.255.103
+
+interface loopback0
+  ip address 192.168.255.103/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface Ethernet1/1
+  description Link to spine-1
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  description Link to spine-2
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
+
+router bgp 65001
+  router-id 192.168.255.103
+  address-family l2vpn evpn
+  neighbor 192.168.255.101
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+  neighbor 192.168.255.102
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+
+vlan 100
+  vn-segment 100100
+
+interface Ethernet1/9
+  description to SRV1
+  switchport
+  switchport access vlan 100
+  spanning-tree port type edge
+  no shutdown
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 100100
+    mcast-group 239.0.0.200
+
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vlan 501
+  vn-segment 50001
+
+fabric forwarding anycast-gateway-mac 0000.0000.bbbb
+
+interface Vlan100
+  no shutdown
+  vrf member TENANT1
+  ip address 198.100.100.1/24 tag 100
+  ip pim sparse-mode
+  mtu 9216
+  fabric forwarding mode anycast-gateway
+
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface nve1
+  member vni 50001 associate-vrf
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+
+router bgp 65001
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
