@@ -1,0 +1,164 @@
+hostname s2-border1
+
+feature pim
+feature ospf
+feature interface-vlan
+feature bgp
+feature isis
+feature vn-segment-vlan-based
+feature nv overlay
+nv overlay evpn
+feature fabric forwarding
+
+route-map DIRECT-TO-OSPF permit 10
+  match interface Ethernet1/5
+  set metric-type type-1
+
+router ospf UNDERLAY
+  router-id 192.168.255.110
+  redistribute direct route-map DIRECT-TO-OSPF
+
+router isis MULTISITE
+  net 49.0011.0011.0011.0011.0011.0011.00
+  is-type level-2
+
+interface loopback0
+  ip address 192.168.255.110/32 tag 12
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip router isis MULTISITE
+  ip pim sparse-mode
+
+interface Ethernet1/1
+  description Link to spine1
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  evpn multisite fabric-tracking
+  no shutdown
+
+interface Ethernet1/2
+  description Link to spine2
+  mtu 9192
+  medium p2p
+  ip unnumbered loop0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  evpn multisite fabric-tracking
+  no shutdown
+
+interface Ethernet1/5
+  description Link to s1-border1
+  mtu 9192
+  ip add 198.0.0.6/30
+  ip router isis MULTISITE
+  isis network point-to-point
+  no ip redirects
+  evpn multisite dci-tracking
+  no shutdown
+
+ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
+
+interface loopback100
+  description Loopback for EVPN Border Gateway
+  ip address 192.168.12.110/32 tag 12
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip router isis MULTISITE
+
+route-map DIRECT-TO-BGP permit 10
+  match tag 12
+
+router bgp 65001
+  router-id 192.168.255.110
+  address-family ipv4 unicast
+    redistribute direct route-map DIRECT-TO-BGP
+  address-family l2vpn evpn
+  neighbor 192.168.255.101
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+  neighbor 192.168.255.102
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+  neighbor 192.168.12.10
+    remote-as 65000
+    update-source loopback100
+    ebgp-multihop 5
+    peer-type fabric-external
+    address-family l2vpn evpn
+      send-community extended
+      rewrite-evpn-rt-asn
+  neighbor 198.0.0.5
+    remote-as 651001
+    address-family ipv4 unicast
+
+vlan 100
+  vn-segment 100100
+vlan 101
+  vn-segment 100101
+
+evpn multisite border-gateway 2
+  delay-restore time 300
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  multisite border-gateway interface loopback100
+  source-interface loopback0
+  member vni 100100
+    mcast-group 239.0.0.200
+    multisite ingress-replication
+  member vni 100101
+    mcast-group 239.0.0.201
+    multisite ingress-replication
+
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! L3 VNI for Tenant1
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vlan 501
+  vn-segment 50001
+
+fabric forwarding anycast-gateway-mac 0000.0000.bbbb
+
+interface loopback1001
+  vrf member TENANT1
+  ip address 198.255.255.110/32
+
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface nve1
+  member vni 50001 associate-vrf
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+
+router bgp 65001
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
