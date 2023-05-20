@@ -123,11 +123,15 @@ interface Ethernet1/7
 
 interface Ethernet1/8
   description to SRV2
+  no shutdown
+  switchport
   switchport access vlan 100
   spanning-tree port type edge
 
 interface Ethernet1/9
   description to SRV4
+  no shutdown
+  switchport
   switchport access vlan 101
   spanning-tree port type edge
 
