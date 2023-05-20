@@ -22,9 +22,8 @@ interface loopback1
 
 interface Ethernet1/1
   description Link to leaf-1
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
+  no switchport
+  ip add 198.2.0.0/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -32,9 +31,8 @@ interface Ethernet1/1
 
 interface Ethernet1/2
   description Link to leaf-2
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
+  no switchport
+  ip add 198.2.0.2/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -42,9 +40,8 @@ interface Ethernet1/2
 
 interface Ethernet1/5
   description Link to border1
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
+  no switchport
+  ip add 198.2.0.4/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -63,3 +60,6 @@ router bgp 65001
     address-family l2vpn evpn
       send-community extended
       route-reflector-client
+      exit
+    exit
+  exit

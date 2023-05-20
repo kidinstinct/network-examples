@@ -1,4 +1,4 @@
-hostname s1-spine1
+hostname s2-spine2
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
@@ -15,4 +15,3 @@ line vty
 exit
 
 boot nxos bootflash:/nxos.9.3.11.bin
-wr

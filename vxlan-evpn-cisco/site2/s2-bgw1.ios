@@ -57,9 +57,8 @@ interface Vlan501
 
 interface Ethernet1/1
   description Link to spine1
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
+  no switchport
+  ip add 198.2.0.5/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -68,9 +67,8 @@ interface Ethernet1/1
 
 interface Ethernet1/2
   description Link to spine2
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
+  no switchport
+  ip add 198.2.0.11/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -146,3 +144,7 @@ router bgp 65001
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+      exit
+    exit
+  exit
+
