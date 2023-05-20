@@ -72,7 +72,6 @@ interface Vlan100
   vrf member TENANT1
   ip address 198.100.100.1/24 tag 100
   ip pim sparse-mode
-  mtu 9216
   fabric forwarding mode anycast-gateway
 
 interface Vlan101
@@ -80,7 +79,6 @@ interface Vlan101
   vrf member TENANT1
   ip address 198.100.101.1/24 tag 100
   ip pim sparse-mode
-  mtu 9216
   fabric forwarding mode anycast-gateway
 
 interface Vlan501

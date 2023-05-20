@@ -77,7 +77,7 @@ interface Ethernet1/2
 
 interface Ethernet1/5
   description Link to s2-border1
-  mtu 9192
+  no switchport
   ip add 198.0.0.6/30
   no ip redirects
   evpn multisite dci-tracking
