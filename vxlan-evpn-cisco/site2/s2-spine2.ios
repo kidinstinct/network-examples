@@ -40,16 +40,6 @@ interface Ethernet1/2
   ip pim sparse-mode
   no shutdown
 
-interface Ethernet1/3
-  description Link to leaf-3
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-  no shutdown
-
 interface Ethernet1/5
   description Link to border1
   mtu 9192

@@ -9,6 +9,23 @@ feature nv overlay
 nv overlay evpn
 feature fabric forwarding
 
+vlan 100
+  vn-segment 100100
+vlan 101
+  vn-segment 100101
+vlan 501
+  vn-segment 50001
+
+ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
+fabric forwarding anycast-gateway-mac 0000.0000.bbbb
+
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
 router ospf UNDERLAY
   router-id 192.168.255.104
 
@@ -37,27 +54,6 @@ interface Ethernet1/2
   ip pim sparse-mode
   no shutdown
 
-ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
-
-router bgp 65001
-  router-id 192.168.255.104
-  address-family l2vpn evpn
-  neighbor 192.168.255.101
-    remote-as 65001
-    update-source loopback0
-    address-family l2vpn evpn
-      send-community extended
-  neighbor 192.168.255.102
-    remote-as 65001
-    update-source loopback0
-    address-family l2vpn evpn
-      send-community extended
-
-vlan 100
-  vn-segment 100100
-vlan 101
-  vn-segment 100101
-
 interface Ethernet1/8
   description to SRV2
   switchport
@@ -71,39 +67,6 @@ interface Ethernet1/9
   switchport access vlan 101
   spanning-tree port type edge
   no shutdown
-
-interface nve1
-  no shutdown
-  host-reachability protocol bgp
-  source-interface loopback0
-  member vni 100100
-    mcast-group 239.0.0.200
-    suppress-arp ! not supported on NXOSv9k
-  member vni 100101
-    mcast-group 239.0.0.201
-    suppress-arp ! not supported on NXOSv9k
-
-evpn
-  vni 100100 l2
-    rd auto
-    route-target import auto
-    route-target export auto
-  vni 100101 l2
-    rd auto
-    route-target import auto
-    route-target export auto
-
-vrf context TENANT1
-  vni 50001
-  rd auto
-  address-family ipv4 unicast
-    route-target both auto
-    route-target both auto evpn
-
-vlan 501
-  vn-segment 50001
-
-fabric forwarding anycast-gateway-mac 0000.0000.bbbb
 
 interface Vlan100
   no shutdown
@@ -127,12 +90,43 @@ interface Vlan501
   ip forward
 
 interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
   member vni 50001 associate-vrf
+  member vni 100100
+    mcast-group 239.0.1.100
+    suppress-arp ! not supported on NXOSv9k
+  member vni 100101
+    mcast-group 239.0.1.100
+    suppress-arp ! not supported on NXOSv9k
+
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
 
 route-map TENANT1_OVERLAY_SUBNETS permit 10
   match tag 100
 
 router bgp 65001
+  router-id 192.168.255.104
+  address-family l2vpn evpn
+  neighbor 192.168.255.101
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+  neighbor 192.168.255.102
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS

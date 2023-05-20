@@ -9,6 +9,34 @@ feature nv overlay
 nv overlay evpn
 feature fabric forwarding
 
+vlan 100
+  vn-segment 100100
+vlan 101
+  vn-segment 100101
+vlan 200
+  vn-segment 100200
+vlan 501
+  vn-segment 50001
+vlan 502
+  vn-segment 50002
+
+ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
+vrf context TENANT2
+  vni 50002
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+
 router ospf UNDERLAY
   router-id 192.168.255.4
 
@@ -37,27 +65,6 @@ interface Ethernet1/2
   ip pim sparse-mode
   no shutdown
 
-ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
-
-router bgp 65000
-  router-id 192.168.255.4
-  address-family l2vpn evpn
-  neighbor 192.168.255.1
-    remote-as 65000
-    update-source loopback0
-    address-family l2vpn evpn
-      send-community extended
-  neighbor 192.168.255.2
-    remote-as 65000
-    update-source loopback0
-    address-family l2vpn evpn
-      send-community extended
-
-vlan 100
-  vn-segment 100100
-vlan 101
-  vn-segment 100101
-
 interface Ethernet1/8
   description to SRV2
   switchport
@@ -72,38 +79,12 @@ interface Ethernet1/9
   spanning-tree port type edge
   no shutdown
 
-interface nve1
+interface Ethernet1/10
+  description to SRV5
+  switchport
+  switchport access vlan 200
+  spanning-tree port type edge
   no shutdown
-  host-reachability protocol bgp
-  source-interface loopback0
-  member vni 100100
-    mcast-group 239.0.0.100
-    suppress-arp ! not supported on NXOSv9k
-  member vni 100101
-    mcast-group 239.0.0.101
-    suppress-arp ! not supported on NXOSv9k
-
-evpn
-  vni 100100 l2
-    rd auto
-    route-target import auto
-    route-target export auto
-  vni 100101 l2
-    rd auto
-    route-target import auto
-    route-target export auto
-
-vrf context TENANT1
-  vni 50001
-  rd auto
-  address-family ipv4 unicast
-    route-target both auto
-    route-target both auto evpn
-
-vlan 501
-  vn-segment 50001
-
-fabric forwarding anycast-gateway-mac 0000.0000.aaaa
 
 interface Vlan100
   no shutdown
@@ -121,22 +102,78 @@ interface Vlan101
   mtu 9216
   fabric forwarding mode anycast-gateway
 
+interface Vlan200
+  no shutdown
+  vrf member TENANT2
+  ip address 198.100.200.1/24 tag 200
+  ip pim sparse-mode
+  mtu 9216
+  fabric forwarding mode anycast-gateway
+
 interface Vlan501
   no shutdown
   vrf member TENANT1
   ip forward
 
+interface Vlan502
+  no shutdown
+  vrf member TENANT2
+  ip forward
+
 interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
   member vni 50001 associate-vrf
+  member vni 50002 associate-vrf
+  member vni 100100
+    mcast-group 239.0.0.100
+    suppress-arp ! not supported on NXOSv9k
+  member vni 100101
+    mcast-group 239.0.0.100
+    suppress-arp ! not supported on NXOSv9k
+  member vni 100200
+    mcast-group 239.0.0.200
+    suppress-arp ! not supported on NXOSv9k
+
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100200 l2
+    rd auto
+    route-target import auto
+    route-target export auto
 
 route-map TENANT1_OVERLAY_SUBNETS permit 10
   match tag 100
+route-map TENANT2_OVERLAY_SUBNETS permit 10
+  match tag 200
 
 router bgp 65000
+  router-id 192.168.255.4
+  address-family l2vpn evpn
+  neighbor 192.168.255.1
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+  neighbor 192.168.255.2
+    remote-as 65000
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+  vrf TENANT2
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT2_OVERLAY_SUBNETS
       exit
     exit
   exit
-
