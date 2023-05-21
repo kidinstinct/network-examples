@@ -273,7 +273,7 @@ cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
-boot nxos bootflash:/nxos.9.3.11.bin
+boot nxos bootflash:/nxos.9.3.9.bin
 router ospf UNDERLAY
   router-id 192.168.255.2
 router bgp 65000
