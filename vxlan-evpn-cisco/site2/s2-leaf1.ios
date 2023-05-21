@@ -1,10 +1,10 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Sat May 20 05:25:18 2023
-!Time: Sat May 20 05:25:19 2023
+!Running configuration last done at: Sun May 21 03:55:50 2023
+!Time: Sun May 21 03:55:51 2023
 
-version 9.3(11) Bios:version
+version 9.3(9) Bios:version
 hostname s2-leaf1
 vdc s2-leaf1 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -57,6 +57,10 @@ vrf context TENANT1
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:50001
+    route-target export 66:50001 evpn
 vrf context management
 
 
@@ -96,6 +100,7 @@ interface nve1
 interface Ethernet1/1
   description Link to spine-1
   no switchport
+  mtu 9216
   ip address 198.2.0.1/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -105,6 +110,7 @@ interface Ethernet1/1
 interface Ethernet1/2
   description Link to spine-2
   no switchport
+  mtu 9216
   ip address 198.2.0.7/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -119,6 +125,7 @@ interface Ethernet1/4
 
 interface Ethernet1/5
   shutdown
+  mtu 9216
 
 interface Ethernet1/6
   shutdown
@@ -128,15 +135,11 @@ interface Ethernet1/7
 
 interface Ethernet1/8
   description to SRV3
-  no shutdown
-  switchport
   switchport access vlan 101
   spanning-tree port type edge
 
 interface Ethernet1/9
   description to SRV1
-  no shutdown
-  switchport
   switchport access vlan 100
   spanning-tree port type edge
 
@@ -318,7 +321,7 @@ cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
-boot nxos bootflash:/nxos.9.3.9.bin
+boot nxos bootflash:/nxos.9.3.9.bin sup-1
 router ospf UNDERLAY
   router-id 192.168.255.103
 router bgp 65001

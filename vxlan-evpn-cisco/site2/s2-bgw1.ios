@@ -1,10 +1,10 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Sat May 20 05:25:28 2023
-!Time: Sat May 20 05:25:28 2023
+!Running configuration last done at: Sun May 21 03:55:49 2023
+!Time: Sun May 21 03:55:50 2023
 
-version 9.3(11) Bios:version
+version 9.3(9) Bios:version
 hostname s2-bgw1
 vdc s2-bgw1 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -64,6 +64,10 @@ vrf context TENANT1
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:50001
+    route-target export 66:50001 evpn
 vrf context management
 
 
@@ -90,6 +94,7 @@ interface nve1
 interface Ethernet1/1
   description Link to spine1
   no switchport
+  mtu 9216
   ip address 198.2.0.5/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -100,6 +105,7 @@ interface Ethernet1/1
 interface Ethernet1/2
   description Link to spine2
   no switchport
+  mtu 9216
   ip address 198.2.0.11/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -116,6 +122,7 @@ interface Ethernet1/4
 interface Ethernet1/5
   description Link to s2-border1
   no switchport
+  mtu 9216
   no ip redirects
   ip address 198.0.0.6/30
   no shutdown
@@ -310,18 +317,14 @@ interface loopback100
   description Loopback for EVPN Border Gateway
   ip address 192.168.12.110/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
-
-interface loopback1001
-  description Loopback for EVPN Border Gateway
-  vrf member TENANT1
-  ip address 198.255.255.110/32
+  ip pim sparse-mode
 icam monitor scale
 
 cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
-boot nxos bootflash:/nxos.9.3.9.bin
+boot nxos bootflash:/nxos.9.3.9.bin sup-1
 router ospf UNDERLAY
   router-id 192.168.255.110
   redistribute direct route-map DIRECT-TO-OSPF
