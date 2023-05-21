@@ -1,10 +1,10 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Sat May 20 05:25:47 2023
-!Time: Sat May 20 05:25:48 2023
+!Running configuration last done at: Sun May 21 03:52:26 2023
+!Time: Sun May 21 03:52:27 2023
 
-version 9.3(11) Bios:version
+version 9.3(9) Bios:version
 hostname s1-leaf1
 vdc s1-leaf1 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -63,12 +63,20 @@ vrf context TENANT1
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:50001
+    route-target export 66:50001 evpn
 vrf context TENANT2
   vni 50002
   ip pim ssm range 232.0.0.0/8
   rd auto
   address-family ipv4 unicast
     route-target both auto
+    route-target both auto evpn
+    route-target import 66:6 evpn
+    route-target export 66:50002
+    route-target export 66:50002 evpn
 vrf context management
 
 
@@ -123,7 +131,7 @@ interface nve1
 
 interface Ethernet1/1
   description Link to spine-1
-  no switchport
+  mtu 9216
   ip address 198.1.0.1/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -132,7 +140,7 @@ interface Ethernet1/1
 
 interface Ethernet1/2
   description Link to spine-2
-  no switchport
+  mtu 9216
   ip address 198.1.0.7/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -140,202 +148,144 @@ interface Ethernet1/2
   no shutdown
 
 interface Ethernet1/3
-  shutdown
 
 interface Ethernet1/4
-  shutdown
 
 interface Ethernet1/5
-  shutdown
+  mtu 9216
 
 interface Ethernet1/6
-  shutdown
 
 interface Ethernet1/7
-  shutdown
 
 interface Ethernet1/8
   description to SRV1
-  no shutdown
   switchport
   switchport access vlan 100
   spanning-tree port type edge
+  no shutdown
 
 interface Ethernet1/9
   description to SRV6
-  no shutdown
   switchport
   switchport access vlan 200
   spanning-tree port type edge
+  no shutdown
 
 interface Ethernet1/10
   description to SRV3
-  no shutdown
   switchport
   switchport access vlan 101
   spanning-tree port type edge
+  no shutdown
 
 interface Ethernet1/11
-  shutdown
 
 interface Ethernet1/12
-  shutdown
 
 interface Ethernet1/13
-  shutdown
 
 interface Ethernet1/14
-  shutdown
 
 interface Ethernet1/15
-  shutdown
 
 interface Ethernet1/16
-  shutdown
 
 interface Ethernet1/17
-  shutdown
 
 interface Ethernet1/18
-  shutdown
 
 interface Ethernet1/19
-  shutdown
 
 interface Ethernet1/20
-  shutdown
 
 interface Ethernet1/21
-  shutdown
 
 interface Ethernet1/22
-  shutdown
 
 interface Ethernet1/23
-  shutdown
 
 interface Ethernet1/24
-  shutdown
 
 interface Ethernet1/25
-  shutdown
 
 interface Ethernet1/26
-  shutdown
 
 interface Ethernet1/27
-  shutdown
 
 interface Ethernet1/28
-  shutdown
 
 interface Ethernet1/29
-  shutdown
 
 interface Ethernet1/30
-  shutdown
 
 interface Ethernet1/31
-  shutdown
 
 interface Ethernet1/32
-  shutdown
 
 interface Ethernet1/33
-  shutdown
 
 interface Ethernet1/34
-  shutdown
 
 interface Ethernet1/35
-  shutdown
 
 interface Ethernet1/36
-  shutdown
 
 interface Ethernet1/37
-  shutdown
 
 interface Ethernet1/38
-  shutdown
 
 interface Ethernet1/39
-  shutdown
 
 interface Ethernet1/40
-  shutdown
 
 interface Ethernet1/41
-  shutdown
 
 interface Ethernet1/42
-  shutdown
 
 interface Ethernet1/43
-  shutdown
 
 interface Ethernet1/44
-  shutdown
 
 interface Ethernet1/45
-  shutdown
 
 interface Ethernet1/46
-  shutdown
 
 interface Ethernet1/47
-  shutdown
 
 interface Ethernet1/48
-  shutdown
 
 interface Ethernet1/49
-  shutdown
 
 interface Ethernet1/50
-  shutdown
 
 interface Ethernet1/51
-  shutdown
 
 interface Ethernet1/52
-  shutdown
 
 interface Ethernet1/53
-  shutdown
 
 interface Ethernet1/54
-  shutdown
 
 interface Ethernet1/55
-  shutdown
 
 interface Ethernet1/56
-  shutdown
 
 interface Ethernet1/57
-  shutdown
 
 interface Ethernet1/58
-  shutdown
 
 interface Ethernet1/59
-  shutdown
 
 interface Ethernet1/60
-  shutdown
 
 interface Ethernet1/61
-  shutdown
 
 interface Ethernet1/62
-  shutdown
 
 interface Ethernet1/63
-  shutdown
 
 interface Ethernet1/64
-  shutdown
 
 interface mgmt0
   vrf member management
@@ -350,7 +300,7 @@ cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
-boot nxos bootflash:/nxos.9.3.9.bin
+boot nxos bootflash:/nxos.9.3.9.bin sup-1
 router ospf UNDERLAY
   router-id 192.168.255.3
 router bgp 65000

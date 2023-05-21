@@ -1,10 +1,10 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Sat May 20 05:26:12 2023
-!Time: Sat May 20 05:26:13 2023
+!Running configuration last done at: Sun May 21 03:54:09 2023
+!Time: Sun May 21 03:54:10 2023
 
-version 9.3(11) Bios:version
+version 9.3(9) Bios:version
 hostname s1-leaf2
 vdc s1-leaf2 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -63,6 +63,10 @@ vrf context TENANT1
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:50001
+    route-target export 66:50001 evpn
 vrf context TENANT2
   vni 50002
   ip pim ssm range 232.0.0.0/8
@@ -70,6 +74,9 @@ vrf context TENANT2
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:6 evpn
+    route-target export 66:50002
+    route-target export 66:50002 evpn
 vrf context management
 
 
@@ -122,6 +129,7 @@ interface nve1
 interface Ethernet1/1
   description Link to spine-1
   no switchport
+  mtu 9216
   ip address 198.1.0.3/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -131,6 +139,7 @@ interface Ethernet1/1
 interface Ethernet1/2
   description Link to leaf-2
   no switchport
+  mtu 9216
   ip address 198.1.0.9/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -145,6 +154,7 @@ interface Ethernet1/4
 
 interface Ethernet1/5
   shutdown
+  mtu 9216
 
 interface Ethernet1/6
   shutdown
@@ -154,22 +164,16 @@ interface Ethernet1/7
 
 interface Ethernet1/8
   description to SRV2
-  no shutdown
-  switchport
   switchport access vlan 100
   spanning-tree port type edge
 
 interface Ethernet1/9
   description to SRV4
-  no shutdown
-  switchport
   switchport access vlan 101
   spanning-tree port type edge
 
 interface Ethernet1/10
   description to SRV5
-  no shutdown
-  switchport
   switchport access vlan 200
   spanning-tree port type edge
 
@@ -348,7 +352,7 @@ cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
-boot nxos bootflash:/nxos.9.3.9.bin
+boot nxos bootflash:/nxos.9.3.9.bin sup-1
 router ospf UNDERLAY
   router-id 192.168.255.4
 router bgp 65000

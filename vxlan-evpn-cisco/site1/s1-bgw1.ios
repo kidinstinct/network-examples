@@ -1,10 +1,10 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Sat May 20 05:25:49 2023
-!Time: Sat May 20 05:25:49 2023
+!Running configuration last done at: Sun May 21 03:53:03 2023
+!Time: Sun May 21 03:53:05 2023
 
-version 9.3(11) Bios:version
+version 9.3(9) Bios:version
 hostname s1-bgw1
 vdc s1-bgw1 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -43,27 +43,48 @@ rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
 fabric forwarding anycast-gateway-mac 0000.0000.aaaa
 ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
-vlan 1,100-101,501
+vlan 1,100-101,501,666
 vlan 100
   vn-segment 100100
 vlan 101
   vn-segment 100101
 vlan 501
   vn-segment 50001
+vlan 666
+  vn-segment 100666
 
 route-map DIRECT-TO-BGP permit 10
   match tag 12
 route-map DIRECT-TO-OSPF permit 10
   match interface Ethernet1/5
   set metric-type type-1
+route-map INTERNET-TO-TENANTS permit 10
+  match tag 666
 route-map TENANT1_OVERLAY_SUBNETS permit 10
   match tag 100
+vrf context INTERNET
+  vni 100666
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+    route-target import 66:50001
+    route-target import 66:50001 evpn
+    route-target import 66:50002 evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:6
+    route-target export 66:6 evpn
 vrf context TENANT1
   vni 50001
   rd auto
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:50001
+    route-target export 66:50001 evpn
 vrf context management
 
 
@@ -72,6 +93,11 @@ interface Vlan1
 interface Vlan501
   no shutdown
   vrf member TENANT1
+  ip forward
+
+interface Vlan666
+  no shutdown
+  vrf member INTERNET
   ip forward
 
 interface nve1
@@ -86,10 +112,12 @@ interface nve1
   member vni 100101
     multisite ingress-replication
     mcast-group 239.0.0.100
+  member vni 100666 associate-vrf
 
 interface Ethernet1/1
   description Link to spine1
   no switchport
+  mtu 9216
   ip address 198.1.0.5/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -100,6 +128,7 @@ interface Ethernet1/1
 interface Ethernet1/2
   description Link to spine2
   no switchport
+  mtu 9216
   ip address 198.1.0.11/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -116,6 +145,7 @@ interface Ethernet1/4
 interface Ethernet1/5
   description Link to s2-border1
   no switchport
+  mtu 9216
   no ip redirects
   ip address 198.0.0.2/30
   no shutdown
@@ -137,7 +167,11 @@ interface Ethernet1/10
   shutdown
 
 interface Ethernet1/11
-  shutdown
+  description to s1-fgt1: port2
+  no switchport
+  vrf member INTERNET
+  ip address 198.1.0.14/30 tag 666
+  no shutdown
 
 interface Ethernet1/12
   shutdown
@@ -310,18 +344,14 @@ interface loopback100
   description Loopback for EVPN Border Gateway
   ip address 192.168.12.10/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
-
-interface loopback1001
-  description Loopback for EVPN Border Gateway Multi-Site
-  vrf member TENANT1
-  ip address 198.255.255.10/32
+  ip pim sparse-mode
 icam monitor scale
 
 cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
-boot nxos bootflash:/nxos.9.3.9.bin
+boot nxos bootflash:/nxos.9.3.9.bin sup-1
 router ospf UNDERLAY
   router-id 192.168.255.10
   redistribute direct route-map DIRECT-TO-OSPF
@@ -351,6 +381,13 @@ router bgp 65000
   neighbor 198.0.0.1
     remote-as 651001
     address-family ipv4 unicast
+  vrf INTERNET
+    address-family ipv4 unicast
+    neighbor 198.1.0.13
+      remote-as 64000
+      address-family ipv4 unicast
+        send-community
+        send-community extended
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
