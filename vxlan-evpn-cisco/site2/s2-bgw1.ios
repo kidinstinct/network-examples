@@ -1,77 +1,12 @@
-hostname s2-spine2
-
-feature pim
-feature ospf
-feature interface-vlan
-feature bgp
-nv overlay evpn
-
-router ospf UNDERLAY
-  router-id 192.168.255.102
-
-interface loopback0
-  ip address 192.168.255.102/32
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-
-interface loopback1
-  description Loopback for Anycast RP
-  ip address 192.168.255.200/32
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-
-interface Ethernet1/1
-  description Link to leaf-1
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-  no shutdown
-
-interface Ethernet1/2
-  description Link to leaf-2
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-  no shutdown
-
-interface Ethernet1/3
-  description Link to leaf-3
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-  no shutdown
-
-interface Ethernet1/5
-  description Link to border1
-  mtu 9192
-  medium p2p
-  ip unnumbered loop0
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
-  no shutdown
-
-ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
-ip pim anycast-rp 192.168.255.200 192.168.255.101
-ip pim anycast-rp 192.168.255.200 192.168.255.102
 
 
 !Command: show running-config
-!Running configuration last done at: Sat May 20 05:25:50 2023
-!Time: Sat May 20 05:25:51 2023
+!Running configuration last done at: Sat May 20 05:25:28 2023
+!Time: Sat May 20 05:25:28 2023
 
 version 9.3(11) Bios:version
-hostname s2-spine2
-vdc s2-spine2 id 1
+hostname s2-bgw1
+vdc s2-bgw1 id 1
   limit-resource vlan minimum 16 maximum 4094
   limit-resource vrf minimum 2 maximum 4096
   limit-resource port-channel minimum 0 maximum 511
@@ -84,7 +19,13 @@ nv overlay evpn
 feature ospf
 feature bgp
 feature pim
+feature isis
+feature fabric forwarding
 feature interface-vlan
+feature vn-segment-vlan-based
+feature nv overlay
+evpn multisite border-gateway 1
+  delay-restore time 300
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
@@ -92,40 +33,79 @@ username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7 
 username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 copp profile strict
-snmp-server user admin network-admin auth md5 37468FABA64A1592B33B35CCED67A1B1043A priv 215198BEEF5C2B82A32936C4B23BABE95164 localizedV2key
+snmp-server user admin network-admin auth md5 014650521C4D12C1271BC1373EC45FAE50A6 priv 37537526793E74F92765BF0E175EDF5ADF80 localizedV2key
 rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
 rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
 rmon event 3 log trap public description ERROR(3) owner PMON@ERROR
 rmon event 4 log trap public description WARNING(4) owner PMON@WARNING
 rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
 
+fabric forwarding anycast-gateway-mac 0000.0000.bbbb
 ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
-ip pim anycast-rp 192.168.255.200 192.168.255.101
-ip pim anycast-rp 192.168.255.200 192.168.255.102
-vlan 1
+vlan 1,100-101,501
+vlan 100
+  vn-segment 100100
+vlan 101
+  vn-segment 100101
+vlan 501
+  vn-segment 50001
 
+route-map DIRECT-TO-BGP permit 10
+  match tag 12
+route-map DIRECT-TO-OSPF permit 10
+  match interface Ethernet1/5
+  set metric-type type-1
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+vrf context TENANT1
+  vni 50001
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
 vrf context management
+
 
 interface Vlan1
 
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  multisite border-gateway interface loopback100
+  member vni 50001 associate-vrf
+  member vni 100100
+    multisite ingress-replication
+    mcast-group 239.0.1.100
+  member vni 100101
+    multisite ingress-replication
+    mcast-group 239.0.1.100
+
 interface Ethernet1/1
-  description Link to leaf-1
+  description Link to spine1
   no switchport
-  ip address 198.2.0.6/31
+  ip address 198.2.0.5/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
   no shutdown
+  evpn multisite fabric-tracking
 
 interface Ethernet1/2
-  description Link to leaf-2
+  description Link to spine2
   no switchport
-  ip address 198.2.0.8/31
+  ip address 198.2.0.11/31
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
   no shutdown
+  evpn multisite fabric-tracking
 
 interface Ethernet1/3
   shutdown
@@ -134,13 +114,12 @@ interface Ethernet1/4
   shutdown
 
 interface Ethernet1/5
-  description Link to border1
+  description Link to s2-border1
   no switchport
-  ip address 198.2.0.10/31
-  ip ospf network point-to-point
-  ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
+  no ip redirects
+  ip address 198.0.0.6/30
   no shutdown
+  evpn multisite dci-tracking
 
 interface Ethernet1/6
   shutdown
@@ -323,15 +302,19 @@ interface mgmt0
   vrf member management
 
 interface loopback0
-  ip address 192.168.255.102/32
+  ip address 192.168.255.110/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
-interface loopback1
-  description Loopback for Anycast RP
-  ip address 192.168.255.200/32
+interface loopback100
+  description Loopback for EVPN Border Gateway
+  ip address 192.168.12.110/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
-  ip pim sparse-mode
+
+interface loopback1001
+  description Loopback for EVPN Border Gateway
+  vrf member TENANT1
+  ip address 198.255.255.110/32
 icam monitor scale
 
 cli alias name wr copy run start
@@ -340,16 +323,46 @@ line console
 line vty
 boot nxos bootflash:/nxos.9.3.9.bin
 router ospf UNDERLAY
-  router-id 192.168.255.102
+  router-id 192.168.255.110
+  redistribute direct route-map DIRECT-TO-OSPF
 router bgp 65001
-  router-id 192.168.255.102
+  router-id 192.168.255.110
+  address-family ipv4 unicast
+    redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
-  neighbor 192.168.255.0/24
+  neighbor 192.168.12.10
+    remote-as 65000
+    update-source loopback100
+    ebgp-multihop 5
+    peer-type fabric-external
+    address-family l2vpn evpn
+      send-community extended
+      rewrite-evpn-rt-asn
+  neighbor 192.168.255.101
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
       send-community extended
-      route-reflector-client
+  neighbor 192.168.255.102
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community extended
+  neighbor 198.0.0.5
+    remote-as 651001
+    address-family ipv4 unicast
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
 
 
 !
