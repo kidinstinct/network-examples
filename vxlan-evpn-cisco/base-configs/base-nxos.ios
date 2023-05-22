@@ -6,6 +6,7 @@ username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7 
 
 no ip domain-lookup
 ip domain-name yandy.dev
+copp profile lenient
 
 interface eth1/1-64
  no switchport
@@ -18,6 +19,6 @@ line console
 line vty
 exit
 
-boot nxos bootflash:/nxos.9.3.9.bin
+boot nxos bootflash:/nxos64-cs.10.3.3.F.bin
 end
 wr
