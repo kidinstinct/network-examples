@@ -1,0 +1,130 @@
+hostname dci-rtr1
+!
+!
+!
+!
+!
+!
+login on-success log
+!
+!
+no ip domain lookup
+ip domain name yandy.dev
+!
+!
+enable secret 9 $9$FA5.Hn0cUIPKrU$xPrFC5Q7i73WxMHnTC33VgQQ8SGNQw3QLq52HXwXi6M
+!
+!
+username cisco privilege 15 secret 9 $9$h3C2uYesDxXe1E$Do7/HmFjsfqAgCowLWJDFknP6.sFEzX/5V71Ngfk5GM
+!
+!
+interface GigabitEthernet1
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet4
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet6
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet7
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet8
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet9
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet10
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet11
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet12
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet13
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet14
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet15
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet16
+ no ip address
+ shutdown
+ negotiation auto
+!
+ip forward-protocol nd
+no ip http server
+ip http authentication local
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ login local
+ stopbits 1
+line aux 0
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+!
+!
+!
+end
