@@ -9,6 +9,7 @@ ip domain-name yandy.dev
 
 interface eth1/1-64
  no switchport
+ mtu 9216
  shutdown
 
 cli alias name wr copy run start
