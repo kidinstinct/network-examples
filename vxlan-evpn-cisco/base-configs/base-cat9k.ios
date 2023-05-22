@@ -1,4 +1,4 @@
-hostname b1-sw1
+hostname cat9kv-1
 !
 !
 vrf definition Mgmt-vrf

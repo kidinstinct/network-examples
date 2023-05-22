@@ -24,7 +24,7 @@ feature fabric forwarding
 feature interface-vlan
 feature vn-segment-vlan-based
 feature nv overlay
-evpn multisite border-gateway 1
+evpn multisite border-gateway 2
   delay-restore time 300
 
 no password strength-check

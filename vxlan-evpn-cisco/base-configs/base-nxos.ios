@@ -1,12 +1,11 @@
-hostname s2-spine2
+hostname nxos93k-1
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
-no ip domain-lookup
 
-interface mgmt0
-  vrf member management
+no ip domain-lookup
+ip domain-name yandy.dev
 
 cli alias name wr copy run start
 line console
@@ -15,3 +14,5 @@ line vty
 exit
 
 boot nxos bootflash:/nxos.9.3.9.bin
+end
+wr
