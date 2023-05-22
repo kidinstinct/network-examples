@@ -7,6 +7,10 @@ username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7 
 no ip domain-lookup
 ip domain-name yandy.dev
 
+interface eth1/1-64
+ no switchport
+ shutdown
+
 cli alias name wr copy run start
 line console
   exec-timeout 0
