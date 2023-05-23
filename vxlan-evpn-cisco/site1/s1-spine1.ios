@@ -73,6 +73,7 @@ router bgp 65000
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn
+      send-community
       send-community extended
       route-reflector-client
 

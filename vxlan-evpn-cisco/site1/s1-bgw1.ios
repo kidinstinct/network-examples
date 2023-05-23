@@ -158,21 +158,26 @@ router bgp 65000
     ebgp-multihop 5
     peer-type fabric-external
     address-family l2vpn evpn
+      send-community
       send-community extended
       rewrite-evpn-rt-asn
   neighbor 192.168.255.1
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn
+      send-community
       send-community extended
   neighbor 192.168.255.2
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn
+      send-community
       send-community extended
   neighbor 198.0.0.1
     remote-as 651001
     address-family ipv4 unicast
+      send-community
+      send-community extended
   vrf INTERNET
     address-family ipv4 unicast
     neighbor 198.1.0.13

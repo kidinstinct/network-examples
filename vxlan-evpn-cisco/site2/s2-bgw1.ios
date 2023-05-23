@@ -127,21 +127,26 @@ router bgp 65001
     ebgp-multihop 5
     peer-type fabric-external
     address-family l2vpn evpn
+      send-community
       send-community extended
       rewrite-evpn-rt-asn
   neighbor 192.168.255.101
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
+      send-community
       send-community extended
   neighbor 192.168.255.102
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
+      send-community
       send-community extended
   neighbor 198.0.0.5
     remote-as 651001
     address-family ipv4 unicast
+      send-community
+      send-community extended
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
