@@ -1,4 +1,4 @@
-hostname cat8kv-17-09-01a
+hostname vios-159-3-m6
 !
 no ip domain lookup
 ip domain name yandy.dev
@@ -10,7 +10,7 @@ enable secret 9 $9$FA5.Hn0cUIPKrU$xPrFC5Q7i73WxMHnTC33VgQQ8SGNQw3QLq52HXwXi6M
 username cisco privilege 15 secret 9 $9$h3C2uYesDxXe1E$Do7/HmFjsfqAgCowLWJDFknP6.sFEzX/5V71Ngfk5GM
 !
 !
-interface range GigabitEthernet1 - 8
+interface range GigabitEthernet0/0 - 7
  no ip address
  shutdown
  negotiation auto
