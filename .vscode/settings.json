@@ -18,5 +18,6 @@
     "titleBar.inactiveBackground": "#2587fe99",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#2587fe"
+  "peacock.color": "#2587fe",
+  "ansible.python.interpreterPath": "/opt/homebrew/bin/python3.11"
 }
