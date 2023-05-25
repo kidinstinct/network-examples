@@ -1,0 +1,26 @@
+#cloud-config
+hostname: s1-srv1
+manage_etc_hosts: True
+system_info:
+  default_user:
+    name: cisco
+password: cisco
+chpasswd: { expire: False }
+ssh_pwauth: True
+sudo: ALL=(ALL) NOPASSWD:ALL
+ssh_authorized_keys:
+  - your-ssh-pubkey-line-goes-here
+network:
+  version: 2
+  ethernets:
+    ens2:
+      dhcp4: fasle
+      dhcp6: false
+      set-name: eth0
+      addresses: [198.100.100.101/24]
+      routes:
+        - to: 0.0.0.0/0
+          via: 198.100.100.1
+      nameservers:
+        addresses: [1.1.1.1, 1.0.0.1]
+        search: [netlab.local]

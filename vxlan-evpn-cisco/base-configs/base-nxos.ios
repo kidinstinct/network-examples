@@ -26,7 +26,7 @@ username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7 
 username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 
 no ip domain-lookup
-ip domain-name yandy.dev
+ip domain-name netlab.local
 copp profile strict
 yes
 

@@ -2,7 +2,7 @@ hostname cat9kv-1
 !
 !
 no ip domain lookup
-ip domain name yandy.dev
+ip domain name netlab.local
 !
 !
 enable secret 9 $9$S9oLH/UjcS3se.$DGYRsu3JMW3LGvAJNTPeU5YLhy.j9EV5Lk2AVaRl/C.

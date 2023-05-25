@@ -1,7 +1,7 @@
 hostname cat8kv-17-09-01a
 !
 no ip domain lookup
-ip domain name yandy.dev
+ip domain name netlab.local
 !
 !
 enable secret 9 $9$FA5.Hn0cUIPKrU$xPrFC5Q7i73WxMHnTC33VgQQ8SGNQw3QLq52HXwXi6M
