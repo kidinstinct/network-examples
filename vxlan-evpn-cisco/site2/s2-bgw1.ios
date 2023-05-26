@@ -45,7 +45,6 @@ vrf context INTERNET
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
-    route-target import 66:50001
     route-target import 66:50001 evpn
     route-target import 66:50002 evpn
     route-target import 66:6
@@ -58,10 +57,6 @@ vrf context TENANT1
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
-    route-target import 66:6
-    route-target import 66:6 evpn
-    route-target export 66:50001
-    route-target export 66:50001 evpn
 
 interface Vlan501
   no shutdown
@@ -112,7 +107,7 @@ interface Ethernet1/2
   evpn multisite fabric-tracking
 
 interface Ethernet1/5
-  description Link to s2-border1
+  description Link to s1-border1
   no switchport
   mtu 9216
   no ip redirects
@@ -121,7 +116,7 @@ interface Ethernet1/5
   evpn multisite dci-tracking
 
 interface Ethernet1/6
-  description to s2-bgw1-eth1/6
+  description to s1-bgw1-eth1/6
   no switchport
   mtu 9216
   ip address 198.1.0.2/30

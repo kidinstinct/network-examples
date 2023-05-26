@@ -1,4 +1,4 @@
-hostname s1-bgw1
+hostname s1-bgw2
 
 nv overlay evpn
 feature ospf
@@ -11,7 +11,7 @@ feature vn-segment-vlan-based
 feature nv overlay
 
 evpn multisite border-gateway 1
-  delay-restore time 300
+  delay-restore time 30
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
@@ -29,8 +29,6 @@ vlan 101
   vn-segment 100101
 vlan 501
   vn-segment 50001
-vlan 666
-  vn-segment 100666
 
 route-map DIRECT-TO-BGP permit 10
   match tag 12
@@ -41,38 +39,16 @@ route-map INTERNET-TO-TENANTS permit 10
   match tag 666
 route-map TENANT1_OVERLAY_SUBNETS permit 10
   match tag 100
-vrf context INTERNET
-  vni 100666
-  rd auto
-  address-family ipv4 unicast
-    route-target both auto
-    route-target both auto evpn
-    route-target import 66:50001
-    route-target import 66:50001 evpn
-    route-target import 66:50002 evpn
-    route-target import 66:6
-    route-target import 66:6 evpn
-    route-target export 66:6
-    route-target export 66:6 evpn
 vrf context TENANT1
   vni 50001
   rd auto
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
-    route-target import 66:6
-    route-target import 66:6 evpn
-    route-target export 66:50001
-    route-target export 66:50001 evpn
 
 interface Vlan501
   no shutdown
   vrf member TENANT1
-  ip forward
-
-interface Vlan666
-  no shutdown
-  vrf member INTERNET
   ip forward
 
 interface nve1
@@ -87,12 +63,13 @@ interface nve1
   member vni 100101
     multisite ingress-replication
     mcast-group 239.0.0.100
-  member vni 100666 associate-vrf
 
 interface Ethernet1/1
   description Link to spine1
   no switchport
-  mtu 9216  medium p2p
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -102,7 +79,9 @@ interface Ethernet1/1
 interface Ethernet1/2
   description Link to spine2
   no switchport
-  mtu 9216  ip unnumbered loopback0
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
@@ -110,47 +89,42 @@ interface Ethernet1/2
   evpn multisite fabric-tracking
 
 interface Ethernet1/5
-  description Link to s2-border1
+  description Link to s2-border2
   no switchport
   mtu 9216
   no ip redirects
-  ip address 198.0.0.2/30
+  ip address 198.0.0.10 255.255.255.252
   no shutdown
   evpn multisite dci-tracking
 
-interface Ethernet1/11
-  description to s1-fgt1: port2
+interface Ethernet1/6
+  description to s3-bgw1: Eth2
   no switchport
-  vrf member INTERNET
-  ip address 198.1.0.14/30 tag 666
+  mtu 9216
   no shutdown
+  evpn multisite dci-tracking
 
 interface loopback0
-  ip address 192.168.255.10/32 tag 12
+  ip address 192.168.255.11/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback100
   description Loopback for EVPN Border Gateway
-  ip address 192.168.12.10/32 tag 12
+  ip address 192.168.12.11/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
-icam monitor scale
-
-cli alias name wr copy run start
-line console
-  exec-timeout 0
-line vty
 
 router ospf UNDERLAY
-  router-id 192.168.255.10
+  router-id 192.168.255.11
   redistribute direct route-map DIRECT-TO-OSPF
+
 router bgp 65000
-  router-id 192.168.255.10
+  router-id 192.168.255.11
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
-  neighbor 192.168.12.110
+  neighbor 192.168.12.111
     remote-as 65001
     update-source loopback100
     ebgp-multihop 5
@@ -171,18 +145,11 @@ router bgp 65000
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 198.0.0.1
+  neighbor 198.0.0.9
     remote-as 651001
     address-family ipv4 unicast
       send-community
       send-community extended
-  vrf INTERNET
-    address-family ipv4 unicast
-    neighbor 198.1.0.13
-      remote-as 64000
-      address-family ipv4 unicast
-        send-community
-        send-community extended
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
@@ -195,5 +162,6 @@ evpn
     rd auto
     route-target import auto
     route-target export auto
+
 end
 wr

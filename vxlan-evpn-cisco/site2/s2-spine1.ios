@@ -71,7 +71,6 @@ interface loopback1
   ip address 192.168.255.200/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
-icam monitor scale
 
 cli alias name wr copy run start
 line console
