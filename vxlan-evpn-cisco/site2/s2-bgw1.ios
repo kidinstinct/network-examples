@@ -37,8 +37,7 @@ route-map DIRECT-TO-BGP permit 10
 route-map DIRECT-TO-OSPF permit 10
   match interface Ethernet1/5
   set metric-type type-1
-route-map TENANT1_OVERLAY_SUBNETS permit 10
-  match tag 100
+
 vrf context INTERNET
   vni 100666
   rd auto
@@ -193,9 +192,7 @@ router bgp 65001
       address-family ipv4 unicast
         send-community
         send-community extended
-  vrf TENANT1
-    address-family ipv4 unicast
-      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+
 evpn
   vni 100100 l2
     rd auto

@@ -37,8 +37,7 @@ route-map DIRECT-TO-OSPF permit 10
   set metric-type type-1
 route-map INTERNET-TO-TENANTS permit 10
   match tag 666
-route-map TENANT1_OVERLAY_SUBNETS permit 10
-  match tag 100
+
 vrf context TENANT1
   vni 50001
   rd auto
@@ -150,9 +149,7 @@ router bgp 65001
     address-family ipv4 unicast
       send-community
       send-community extended
-  vrf TENANT1
-    address-family ipv4 unicast
-      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+
 evpn
   vni 100100 l2
     rd auto
