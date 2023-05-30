@@ -1,12 +1,12 @@
-hostname cat9kv-1
+hostname cat9kv-17-10-01-prd7
 !
 !
 no ip domain lookup
 ip domain name netlab.local
 !
 !
-enable secret 9 $9$S9oLH/UjcS3se.$DGYRsu3JMW3LGvAJNTPeU5YLhy.j9EV5Lk2AVaRl/C.
-username cisco privilege 15 secret 9 $9$EOius3mOb2FM8U$ucuSslgurpe0cR
+enable secret cisco
+username cisco privilege 15 secret cisco
 !
 !
 interface Vlan1
@@ -22,20 +22,23 @@ ip ssh bulk-mode 131072
 !
 !
 line con 0
-
-exec-timeout 0 0
- privilege level 15
- logging synchronous
- login local
- stopbits 1
+  exec-timeout 0 0
+  privilege level 15
+  logging synchronous
+  login local
+  stopbits 1
 line vty 0 4
- exec-timeout 60 0
- privilege level 15
- logging synchronous
- login local
- transport input ssh
+  exec-timeout 60 0
+  privilege level 15
+  logging synchronous
+  login local
+  transport input ssh
 line vty 5 15
- login
- transport input ssh
+  exec-timeout 60 0
+  privilege level 15
+  logging synchronous
+  login local
+  transport input ssh
+
 end
 wr
