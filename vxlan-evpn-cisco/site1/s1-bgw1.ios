@@ -22,7 +22,7 @@ no ip domain-lookup
 fabric forwarding anycast-gateway-mac 0000.0000.aaaa
 ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
-vlan 1,100-101,501,666
+vlan 1,100-101,501,666,1666
 vlan 100
   vn-segment 100100
 vlan 101
@@ -67,6 +67,12 @@ interface Vlan666
   no shutdown
   vrf member INTERNET
   ip forward
+
+interface Vlan1666
+  no shutdown
+  mtu 9216
+  vrf member INTERNET
+  ip address 192.168.0.14/30
 
 interface nve1
   no shutdown
@@ -125,10 +131,9 @@ interface Ethernet1/6
 
 interface Ethernet1/11
   description to s1-fgt1: port2
-  no switchport
-  vrf member INTERNET
-  ip address 198.1.0.14/30 tag 666
-  no shutdown
+  switchport mode trunk
+  switchport trunk allowed vlan 1666
+  spanning-tree port type edge trunk
 
 interface loopback0
   ip address 192.168.255.10/32 tag 12
@@ -189,7 +194,7 @@ router bgp 65000
       send-community extended
   vrf INTERNET
     address-family ipv4 unicast
-    neighbor 198.1.0.13
+    neighbor 192.168.0.13
       remote-as 64000
       address-family ipv4 unicast
         send-community
