@@ -45,8 +45,8 @@ vrf context INTERNET
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
-    route-target import 66:50001 evpn
-    route-target import 66:50002 evpn
+    route-target import 66:50001
+    route-target import 66:50002
     route-target import 66:6
     route-target import 66:6 evpn
     route-target export 66:6
@@ -131,6 +131,7 @@ interface Ethernet1/6
 
 interface Ethernet1/11
   description to s1-fgt1: port2
+  switchport
   switchport mode trunk
   switchport trunk allowed vlan 1666
   spanning-tree port type edge trunk
