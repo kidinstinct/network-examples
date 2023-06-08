@@ -4,15 +4,14 @@ no ip domain lookup
 ip domain name netlab.local
 !
 !
-enable secret 9 $9$FA5.Hn0cUIPKrU$xPrFC5Q7i73WxMHnTC33VgQQ8SGNQw3QLq52HXwXi6M
+enable secret cisco
 !
 !
-username cisco privilege 15 secret 9 $9$h3C2uYesDxXe1E$Do7/HmFjsfqAgCowLWJDFknP6.sFEzX/5V71Ngfk5GM
+username cisco privilege 15 secret cisco
 !
 !
-interface range GigabitEthernet0/0 - 3, GigabitEthernet1/0 - 3, GigabitEthernet2/0 - 3, GigabitEthernet3/0 - 3
+interface range GigabitEthernet0/0 - 3, GigabitEthernet1/0 - 3
  shutdown
- negotiation auto
 !
 no ip http server
 no ip http secure-server
@@ -24,7 +23,6 @@ line con 0
  logging synchronous
  login local
  stopbits 1
-line aux 0
 line vty 0 4
  exec-timeout 60 0
  privilege level 15

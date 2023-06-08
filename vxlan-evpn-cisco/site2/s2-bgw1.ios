@@ -126,7 +126,7 @@ interface Ethernet1/11
   description to s2-fgt1: port2
   no switchport
   vrf member INTERNET
-  ip address 198.2.0.14/30 tag 666
+  ip address 192.168.0.18/30 tag 666
   no shutdown
 
 interface loopback0
@@ -186,8 +186,7 @@ router bgp 65001
       send-community extended
   vrf INTERNET
     address-family ipv4 unicast
-    no neighbor 198.2.0.13
-    neighbor 198.2.0.13
+    neighbor 192.168.0.17
       remote-as 64001
       address-family ipv4 unicast
         send-community
