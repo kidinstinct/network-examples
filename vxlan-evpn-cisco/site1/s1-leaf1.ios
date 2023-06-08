@@ -60,7 +60,7 @@ interface Vlan100
   no shutdown
   mtu 9216
   vrf member TENANT1
-  ip address 172.17.100.1/24 tag 100
+  ip address 172.16.100.1/24 tag 100
   ip pim sparse-mode
   fabric forwarding mode anycast-gateway
 
@@ -68,7 +68,7 @@ interface Vlan101
   no shutdown
   mtu 9216
   vrf member TENANT1
-  ip address 172.17.101.1/24 tag 100
+  ip address 172.16.101.1/24 tag 100
   ip pim sparse-mode
   fabric forwarding mode anycast-gateway
 
@@ -76,7 +76,7 @@ interface Vlan200
   no shutdown
   mtu 9216
   vrf member TENANT2
-  ip address 172.17.200.1/24 tag 200
+  ip address 172.16.200.1/24 tag 200
   ip pim sparse-mode
   fabric forwarding mode anycast-gateway
 
