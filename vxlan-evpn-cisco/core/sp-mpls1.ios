@@ -1,0 +1,66 @@
+hostname sp-mpls1
+!
+no ip domain lookup
+ip domain name netlab.local
+!
+enable secret cisco
+!
+!
+username cisco privilege 15 secret cisco
+!
+interface Loopback0
+ ip address 169.255.255.3 255.255.255.255
+!
+interface GigabitEthernet1
+ description to s1-fgt1
+ ip address 169.0.0.1 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+interface GigabitEthernet2
+ description to s2-fgt2
+ ip address 169.0.0.5 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+interface GigabitEthernet3
+ description to b1-fgt1
+ ip address 169.0.0.9 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+router bgp 651202
+ bgp router-id 169.255.255.3
+ bgp log-neighbor-changes
+ !
+ neighbor 169.0.0.2 remote-as 65000
+ neighbor 169.0.0.6 remote-as 65001
+ neighbor 169.0.0.10 remote-as 65101
+ address-family ipv4
+  redistribute connected
+  neighbor 169.0.0.2 remote-as 65000
+  neighbor 169.0.0.2 activate
+  neighbor 169.0.0.6 remote-as 65001
+  neighbor 169.0.0.6 activate
+  neighbor 169.0.0.10 remote-as 65101
+  neighbor 169.0.0.10 activate
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ login local
+ stopbits 1
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+!
+end
+wr
