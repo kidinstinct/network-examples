@@ -3,13 +3,10 @@ hostname dci-rtr1
 no ip domain lookup
 ip domain name netlab.local
 !
+enable secret cisco
 !
 !
-!
-enable secret 9 $9$FA5.Hn0cUIPKrU$xPrFC5Q7i73WxMHnTC33VgQQ8SGNQw3QLq52HXwXi6M
-!
-!
-username cisco privilege 15 secret 9 $9$h3C2uYesDxXe1E$Do7/HmFjsfqAgCowLWJDFknP6.sFEzX/5V71Ngfk5GM
+username cisco privilege 15 secret cisco
 !
 vrf definition LINK1
  rd 651001:1
@@ -31,36 +28,36 @@ interface Loopback1
  vrf forwarding LINK2
  ip address 169.255.255.2 255.255.255.255
 !
-interface GigabitEthernet0/0
+interface GigabitEthernet1
  description to s1-bgw1
- mtu 9216
+ mtu 9000
  vrf forwarding LINK1
  ip address 198.0.0.1 255.255.255.252
  no ip redirects
  no ip proxy-arp
  no shutdown
 !
-interface GigabitEthernet0/1
+interface GigabitEthernet2
  description to s2-bgw1
- mtu 9216
+ mtu 9000
  vrf forwarding LINK1
  ip address 198.0.0.5 255.255.255.252
  no ip redirects
  no ip proxy-arp
  no shutdown
 !
-interface GigabitEthernet0/2
+interface GigabitEthernet3
  description to s1-bgw2
- mtu 9216
+ mtu 9000
  vrf forwarding LINK2
  ip address 198.0.0.9 255.255.255.252
  no ip redirects
  no ip proxy-arp
  no shutdown
 !
-interface GigabitEthernet0/3
+interface GigabitEthernet4
  description to s2-bgw2
- mtu 9216
+ mtu 9000
  vrf forwarding LINK2
  ip address 198.0.0.13 255.255.255.252
  no ip redirects
@@ -94,7 +91,6 @@ line con 0
  logging synchronous
  login local
  stopbits 1
-line aux 0
 line vty 0 4
  exec-timeout 60 0
  privilege level 15
