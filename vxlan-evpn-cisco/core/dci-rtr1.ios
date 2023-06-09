@@ -33,6 +33,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description to s1-bgw1
+ mtu 9216
  vrf forwarding LINK1
  ip address 198.0.0.1 255.255.255.252
  no ip redirects
@@ -41,6 +42,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to s2-bgw1
+ mtu 9216
  vrf forwarding LINK1
  ip address 198.0.0.5 255.255.255.252
  no ip redirects
@@ -49,6 +51,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to s1-bgw2
+ mtu 9216
  vrf forwarding LINK2
  ip address 198.0.0.9 255.255.255.252
  no ip redirects
@@ -57,6 +60,7 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to s2-bgw2
+ mtu 9216
  vrf forwarding LINK2
  ip address 198.0.0.13 255.255.255.252
  no ip redirects
