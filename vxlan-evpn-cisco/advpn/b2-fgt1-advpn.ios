@@ -1,0 +1,431 @@
+config system interface
+    edit "lo0"
+        set vdom "root"
+        set ip 169.255.255.102 255.255.255.255
+        set allowaccess ping
+        set type loopback
+        set role lan
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s1-inet-advpn"
+        set interface "port1"
+        set peertype any
+        set net-device enable
+        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set network-overlay enable
+        set auto-discovery-receiver enable
+        set remote-gw 172.29.129.1
+        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "s1-inet-advpn"
+        set phase1name "s1-inet-advpn"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+    next
+end
+
+config system interface
+    edit "s1-inet-advpn"
+        set vdom "root"
+        set ip 169.10.0.102 255.255.255.255
+        set type tunnel
+        set remote-ip 169.10.0.1 255.255.255.0
+        set role wan
+        set interface "port1"
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s1-inet-advpn"
+        set add-route disable
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s2-inet-advpn"
+        set interface "port1"
+        set peertype any
+        set net-device enable
+        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set network-overlay enable
+        set auto-discovery-receiver enable
+        set remote-gw 172.29.129.2
+        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "s2-inet-advpn"
+        set phase1name "s2-inet-advpn"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+    next
+end
+
+config system interface
+    edit "s2-inet-advpn"
+        set vdom "root"
+        set ip 169.10.2.102 255.255.255.255
+        set type tunnel
+        set remote-ip 169.10.2.2 255.255.255.0
+        set role wan
+        set interface "port1"
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s2-inet-advpn"
+        set add-route disable
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s1-mpls-advpn"
+        set interface "port3"
+        set peertype any
+        set net-device enable
+        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set auto-discovery-receiver enable
+        set remote-gw 169.0.0.2
+        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "s1-mpls-advpn"
+        set phase1name "s1-mpls-advpn"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+    next
+end
+
+config system interface
+    edit "s1-mpls-advpn"
+        set vdom "root"
+        set ip 169.10.1.102 255.255.255.255
+        set type tunnel
+        set remote-ip 169.10.1.1 255.255.255.0
+        set role wan
+        set interface "port3"
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s1-mpls-advpn"
+        set add-route disable
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s2-mpls-advpn"
+        set interface "port3"
+        set peertype any
+        set net-device enable
+        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set auto-discovery-receiver enable
+        set remote-gw 169.0.0.6
+        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "s2-mpls-advpn"
+        set phase1name "s2-mpls-advpn"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+    next
+end
+
+config system interface
+    edit "s2-mpls-advpn"
+        set vdom "root"
+        set ip 169.10.3.102 255.255.255.255
+        set type tunnel
+        set remote-ip 169.10.3.2 255.255.255.0
+        set role wan
+        set interface "port3"
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "s2-mpls-advpn"
+        set add-route disable
+    next
+end
+
+
+config router prefix-list
+    edit "WAN-SUBNETS"
+        config rule
+            edit 1
+                set prefix 169.0.0.0 255.255.255.0
+                unset ge
+                set le 32
+            next
+            edit 2
+                set prefix 172.29.129.0 255.255.255.0
+                unset ge
+                set le 32
+            next
+        end
+    next
+end
+
+config router route-map
+    edit "DENY-WAN-IN"
+        config rule
+            edit 1
+                set action deny
+                set match-ip-address "WAN-SUBNETS"
+                unset set-ip-prefsrc
+            next
+            edit 2
+                unset set-ip-prefsrc
+            next
+        end
+    next
+end
+
+config router bgp
+    set ibgp-multipath enable
+    set additional-path enable
+    set additional-path-select 4
+    config neighbor
+        edit "169.10.0.1"
+            set allowas-in-enable enable
+            set capability-graceful-restart enable
+            set next-hop-self enable
+            set remote-as 64000
+            set route-map-in "DENY-WAN-IN"
+            set additional-path both
+            set adv-additional-path 4
+        next
+        edit "169.10.1.1"
+            set allowas-in-enable enable
+            set capability-graceful-restart enable
+            set next-hop-self enable
+            set remote-as 64000
+            set route-map-in "DENY-WAN-IN"
+            set additional-path both
+            set adv-additional-path 4
+        next
+        edit "169.10.2.2"
+            set allowas-in-enable enable
+            set capability-graceful-restart enable
+            set next-hop-self enable
+            set remote-as 64000
+            set route-map-in "DENY-WAN-IN"
+            set additional-path both
+            set adv-additional-path 4
+        next
+        edit "169.10.3.2"
+            set allowas-in-enable enable
+            set capability-graceful-restart enable
+            set next-hop-self enable
+            set remote-as 64000
+            set route-map-in "DENY-WAN-IN"
+            set additional-path both
+            set adv-additional-path 4
+        next
+    end
+    config network
+        edit 1
+            set prefix 172.27.0.0 255.255.255.252
+        next
+        edit 2
+            set prefix 172.27.0.0 255.255.0.0
+        next
+    end
+end
+
+config system sdwan
+    set status enable
+    config zone
+        edit "virtual-wan-link"
+        next
+        edit "HUB1-ADVPN"
+        next
+        edit "HUB2-ADVPN"
+        next
+    end
+    config members
+        edit 1
+            set interface "s1-inet-advpn"
+            set zone "HUB1-ADVPN"
+            set cost 10
+        next
+        edit 2
+            set interface "s1-mpls-advpn"
+            set zone "HUB1-ADVPN"
+            set cost 20
+        next
+        edit 3
+            set interface "s2-inet-advpn"
+            set zone "HUB2-ADVPN"
+            set cost 10
+        next
+        edit 4
+            set interface "s2-mpls-advpn"
+            set zone "HUB2-ADVPN"
+            set cost 20
+        next
+    end
+end
+
+config firewall address
+    edit "sw_to_fgt"
+        set allow-routing enable
+        set subnet 172.27.0.0 255.255.255.252
+    next
+    edit "b1_local_subnet_1"
+        set allow-routing enable
+        set subnet 172.26.0.0 255.255.0.0
+    next
+    edit "bgws_to_fgt"
+        set allow-routing enable
+        set subnet 192.168.0.0 255.255.0.0
+    next
+    edit "dc_srvs"
+        set allow-routing enable
+        set subnet 172.16.0.0 255.255.0.0
+    next
+    edit "b2_local_subnet_1"
+        set allow-routing enable
+        set subnet 172.27.0.0 255.255.0.0
+    next
+    edit "fgt_loopbacks"
+        set allow-routing enable
+        set subnet 169.255.255.0 255.255.255.0
+    next
+    edit "advpn_tunnels"
+        set allow-routing enable
+        set subnet 169.10.0.0 255.255.252.0
+    next
+end
+
+config firewall addrgrp
+    edit "b2_local_subnets"
+        set member "sw_to_fgt" "b2_local_subnet_1" "fgt_loopbacks" "advpn_tunnels"
+        set allow-routing enable
+    next
+    edit "hub_subnets"
+        set member "bgws_to_fgt" "dc_srvs" "fgt_loopbacks" "advpn_tunnels"
+        set allow-routing enable
+    next
+    edit "spoke_subnets"
+        set member "b2_local_subnet_1" "b1_local_subnet_1" "fgt_loopbacks" "advpn_tunnels"
+        set allow-routing enable
+    next
+end
+
+config firewall policy
+    edit 3
+        set name "hub1_advpn_inboud"
+        set srcintf "HUB1-ADVPN"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "hub_subnets"
+        set dstaddr "b2_local_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 4
+        set name "hub1_advpn_outbound"
+        set srcintf "port2"
+        set dstintf "HUB1-ADVPN"
+        set action accept
+        set srcaddr "b2_local_subnets"
+        set dstaddr "hub_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 5
+        set name "hub1_advpn_spoke2spoke_inbound"
+        set srcintf "HUB1-ADVPN"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "spoke_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 6
+        set name "hub1_advpn_spoke2spoke_outbound"
+        set srcintf "port2"
+        set dstintf "HUB1-ADVPN"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "spoke_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 7
+        set name "hub1_advpn_inbound_lo0"
+        set srcintf "HUB1-ADVPN"
+        set dstintf "lo0"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "fgt_loopbacks"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 8
+        set name "hub2_advpn_inboud"
+        set srcintf "HUB2-ADVPN"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "hub_subnets"
+        set dstaddr "b2_local_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 9
+        set name "hub2_advpn_outbound"
+        set srcintf "port2"
+        set dstintf "HUB2-ADVPN"
+        set action accept
+        set srcaddr "b2_local_subnets"
+        set dstaddr "hub_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 10
+        set name "hub2_advpn_spoke2spoke_inbound"
+        set srcintf "HUB2-ADVPN"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "spoke_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 11
+        set name "hub2_advpn_spoke2spoke_outbound"
+        set srcintf "port2"
+        set dstintf "HUB2-ADVPN"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "spoke_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 12
+        set name "hub2_advpn_inbound_lo0"
+        set srcintf "HUB2-ADVPN"
+        set dstintf "lo0"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "fgt_loopbacks"
+        set schedule "always"
+        set service "ALL"
+    next
+end
