@@ -272,7 +272,7 @@ config firewall policy
         set srcintf "virtual-wan-link"
         set dstintf "lo0"
         set action accept
-        set srcaddr "spoke_subnets"
+        set srcaddr "spoke_subnets" "dc_subnets"
         set dstaddr "fgt_loopbacks"
         set schedule "always"
         set service "ALL"

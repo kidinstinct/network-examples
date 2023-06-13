@@ -373,7 +373,7 @@ config firewall policy
         set srcintf "HUB1-ADVPN"
         set dstintf "lo0"
         set action accept
-        set srcaddr "spoke_subnets"
+        set srcaddr "spoke_subnets" "hub_subnets"
         set dstaddr "fgt_loopbacks"
         set schedule "always"
         set service "ALL"
@@ -423,7 +423,7 @@ config firewall policy
         set srcintf "HUB2-ADVPN"
         set dstintf "lo0"
         set action accept
-        set srcaddr "spoke_subnets"
+        set srcaddr "spoke_subnets" "hub_subnets"
         set dstaddr "fgt_loopbacks"
         set schedule "always"
         set service "ALL"
