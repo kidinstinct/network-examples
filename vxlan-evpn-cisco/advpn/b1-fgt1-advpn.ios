@@ -282,7 +282,7 @@ config system sdwan
 end
 
 config firewall address
-    edit "sw-to-fgt"
+    edit "sw_to_fgt"
         set allow-routing enable
         set subnet 172.26.0.0 255.255.255.252
     next
@@ -306,7 +306,7 @@ config firewall address
         set allow-routing enable
         set subnet 169.255.255.0 255.255.255.0
     next
-    edit "advpn-tunnels"
+    edit "advpn_tunnels"
         set allow-routing enable
         set subnet 169.10.0.0 255.255.252.0
     next
@@ -314,15 +314,15 @@ end
 
 config firewall addrgrp
     edit "b1_local_subnets"
-        set member "sw-to-fgt" "b1_local_subnet_1" "fgt_loopbacks" "advpn-tunnels"
+        set member "sw_to_fgt" "b1_local_subnet_1" "fgt_loopbacks" "advpn_tunnels"
         set allow-routing enable
     next
     edit "hub_subnets"
-        set member "bgws_to_fgt" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
+        set member "bgws_to_fgt" "dc_srvs" "fgt_loopbacks" "advpn_tunnels"
         set allow-routing enable
     next
     edit "spoke_subnets"
-        set member "b2_local_subnet_1" "b1_local_subnet_1" "fgt_loopbacks" "advpn-tunnels"
+        set member "b2_local_subnet_1" "b1_local_subnet_1" "fgt_loopbacks" "advpn_tunnels"
         set allow-routing enable
     next
 end
