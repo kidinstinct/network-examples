@@ -1,0 +1,280 @@
+config system interface
+    edit "lo0"
+        set vdom "root"
+        set ip 169.255.255.2 255.255.255.255
+        set allowaccess ping
+        set type loopback
+        set role lan
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "inet-advpn"
+        set type dynamic
+        set interface "port1"
+        set peertype any
+        set net-device disable
+        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set add-route disable
+        set dpd on-idle
+        set wizard-type hub-fortigate-auto-discovery
+        set auto-discovery-sender enable
+        set network-overlay enable
+        set psksecret ENC VyY/eEiV+ZHcjY20L1R0RJ1LDaRFNexXRhzP/XCAw6fJfwl7SbXA3PHWQC7Za0vVWoojdAwfYBa3/gow9RMpS+S32AImVX6zf3R6780oHaHpAql64EbDvlrGxwreAib8gMFkQ6/XN0z6VVHz22CgQQFMfIE3d7XrKObc4X5zpO++cwxbLiw+lfPLzUrb235t2l3nAg==
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "inet-advpn"
+        set phase1name "inet-advpn"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+    next
+end
+
+config system interface
+    edit "inet-advpn"
+        set vdom "root"
+        set ip 169.10.2.2 255.255.255.255
+        set type tunnel
+        set remote-ip 169.10.2.254 255.255.255.0
+        set role wan
+        set interface "port1"
+        set allowaccess ping
+    next
+end
+
+config vpn ipsec phase1-interface
+    edit "mpls-advpn"
+        set type dynamic
+        set interface "port3"
+        set peertype any
+        set net-device disable
+        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set add-route disable
+        set dpd on-idle
+        set wizard-type hub-fortigate-auto-discovery
+        set auto-discovery-sender enable
+        set network-overlay enable
+        set psksecret ENC VyY/eEiV+ZHcjY20L1R0RJ1LDaRFNexXRhzP/XCAw6fJfwl7SbXA3PHWQC7Za0vVWoojdAwfYBa3/gow9RMpS+S32AImVX6zf3R6780oHaHpAql64EbDvlrGxwreAib8gMFkQ6/XN0z6VVHz22CgQQFMfIE3d7XrKObc4X5zpO++cwxbLiw+lfPLzUrb235t2l3nAg==
+    next
+end
+
+config vpn ipsec phase2-interface
+    edit "mpls-advpn"
+        set phase1name "mpls-advpn"
+        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+    next
+end
+
+config system interface
+    edit "mpls-advpn"
+        set vdom "root"
+        set ip 169.10.3.2 255.255.255.255
+        set type tunnel
+        set remote-ip 169.10.3.254 255.255.255.0
+        set role wan
+        set interface "port3"
+        set allowaccess ping
+    next
+end
+
+
+config router prefix-list
+    edit "WAN-SUBNETS"
+        config rule
+            edit 1
+                set prefix 169.0.0.0 255.255.255.0
+                unset ge
+                set le 32
+            next
+            edit 2
+                set prefix 172.29.129.0 255.255.255.0
+                unset ge
+                set le 32
+            next
+        end
+    next
+end
+
+config router route-map
+    edit "DENY-WAN-IN"
+        config rule
+            edit 1
+                set action deny
+                set match-ip-address "WAN-SUBNETS"
+                unset set-ip-prefsrc
+            next
+            edit 2
+                unset set-ip-prefsrc
+            next
+        end
+    next
+end
+
+config router bgp
+    set ibgp-multipath enable
+    set additional-path enable
+    set additional-path-select 4
+    config neighbor-group
+        edit "inet-advpn"
+            set allowas-in-enable enable
+            set capability-graceful-restart enable
+            set capability-default-originate enable
+            set next-hop-self enable
+            set remote-as 64000
+            set route-map-in "DENY-WAN-IN"
+            set route-reflector-client enable
+            set additional-path both
+            set adv-additional-path 4
+        next
+        edit "mpls-advpn"
+            set allowas-in-enable enable
+            set capability-graceful-restart enable
+            set capability-default-originate enable
+            set next-hop-self enable
+            set remote-as 64000
+            set route-map-in "DENY-WAN-IN"
+            set route-reflector-client enable
+            set additional-path both
+            set adv-additional-path 4
+        next
+    end
+    config neighbor-range
+        edit 1
+            set prefix 169.10.2.0 255.255.255.0
+            set neighbor-group "inet-advpn"
+        next
+        edit 2
+            set prefix 169.10.3.0 255.255.255.0
+            set neighbor-group "mpls-advpn"
+        next
+    end
+    config network
+        edit 1
+            set prefix 192.168.0.16 255.255.255.252
+        next
+        edit 2
+            set prefix 10.100.104.0 255.255.255.0
+        next
+        edit 3
+            set prefix 172.16.0.0 255.255.0.0
+        next
+    end
+end
+
+
+! SDWAN
+config system sdwan
+    set status enable
+    config zone
+        edit "virtual-wan-link"
+        next
+    end
+    config members
+        edit 1
+            set interface "inet-advpn"
+        next
+        edit 2
+            set interface "mpls-advpn"
+        next
+    end
+end
+
+
+
+
+! FIREWALL POLICIES
+config firewall address
+    edit "bgws_to_fgt"
+        set allow-routing enable
+        set subnet 192.168.0.0 255.255.0.0
+    next
+    edit "mgmt"
+        set allow-routing enable
+        set subnet 10.100.104.0 255.255.255.0
+    next
+    edit "dc_srvs"
+        set allow-routing enable
+        set subnet 172.16.0.0 255.255.0.0
+    next
+    edit "b1_subnets"
+        set allow-routing enable
+        set subnet 172.26.0.0 255.255.0.0
+    next
+    edit "b2_subnets"
+        set allow-routing enable
+        set subnet 172.27.0.0 255.255.0.0
+    next
+    edit "fgt_loopbacks"
+        set allow-routing enable
+        set subnet 169.255.255.0 255.255.255.0
+    next
+    edit "advpn-tunnels"
+        set allow-routing enable
+        set subnet 169.10.0.0 255.255.252.0
+    next
+end
+
+config firewall addrgrp
+    edit "dc_subnets"
+        set member "bgws_to_fgt" "mgmt" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
+        set comment "VPN: inet-advpn (Created by VPN wizard)"
+        set allow-routing enable
+    next
+    edit "spoke_subnets"
+        set member "b1_subnets" "b2_subnets" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
+    next
+end
+
+config firewall policy
+    edit 3
+        set name "advpn_inbound"
+        set srcintf "virtual-wan-link"
+        set dstintf "port2"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "dc_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 4
+        set name "advpn_inbound_mgmt"
+        set srcintf "virtual-wan-link"
+        set dstintf "port8"
+        set action accept
+        set srcaddr "all"
+        set dstaddr "dc_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 5
+        set name "advpn_spoke2spoke"
+        set srcintf "virtual-wan-link"
+        set dstintf "virtual-wan-link"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "spoke_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 6
+        set name "advpn_outbound"
+        set srcintf "port2"
+        set dstintf "virtual-wan-link"
+        set action accept
+        set srcaddr "dc_subnets"
+        set dstaddr "spoke_subnets"
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 7
+        set name "advpn_inbound_lo0"
+        set srcintf "virtual-wan-link"
+        set dstintf "lo0"
+        set action accept
+        set srcaddr "spoke_subnets"
+        set dstaddr "fgt_loopbacks"
+        set schedule "always"
+        set service "ALL"
+    next
+end
