@@ -31,22 +31,29 @@ interface GigabitEthernet3
  no ip redirects
  no ip proxy-arp
  no shutdown
+!otiation auto
+!
+interface GigabitEthernet4
+ description to b2-fgt1
+ ip address 169.0.0.13 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ negotiation auto
 !
 router bgp 651202
  bgp router-id 169.255.255.3
  bgp log-neighbor-changes
  !
- neighbor 169.0.0.2 remote-as 65000
- neighbor 169.0.0.6 remote-as 65001
- neighbor 169.0.0.10 remote-as 65101
+ neighbor 169.0.0.2 remote-as 64000
+ neighbor 169.0.0.6 remote-as 64001
+ neighbor 169.0.0.10 remote-as 64101
+ neighbor 169.0.0.14 remote-as 64102
  address-family ipv4
   redistribute connected
-  neighbor 169.0.0.2 remote-as 65000
   neighbor 169.0.0.2 activate
-  neighbor 169.0.0.6 remote-as 65001
   neighbor 169.0.0.6 activate
-  neighbor 169.0.0.10 remote-as 65101
   neighbor 169.0.0.10 activate
+  neighbor 169.0.0.14 activate
 !
 !
 line con 0
