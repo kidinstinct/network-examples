@@ -1,10 +1,10 @@
-! INET ADVPN
 config system interface
     edit "lo0"
         set vdom "root"
         set ip 169.255.255.1 255.255.255.255
         set allowaccess ping
         set type loopback
+        set role lan
     next
 end
 
@@ -185,27 +185,27 @@ end
 
 ! FIREWALL POLICIES
 config firewall address
-    edit "bgw-to-fgt-192.168.0.0"
+    edit "bgws_to_fgt"
         set allow-routing enable
         set subnet 192.168.0.0 255.255.0.0
     next
-    edit "mgmt-10.100.104.0"
+    edit "mgmt"
         set allow-routing enable
         set subnet 10.100.104.0 255.255.255.0
     next
-    edit "dc-srv-172.16.0.0"
+    edit "dc_srvs"
         set allow-routing enable
         set subnet 172.16.0.0 255.255.0.0
     next
-    edit "b1_subnet-172.26.0.0"
+    edit "b1_subnets"
         set allow-routing enable
         set subnet 172.26.0.0 255.255.0.0
     next
-    edit "b2_subnet-172.27.0.0"
+    edit "b2_subnets"
         set allow-routing enable
         set subnet 172.27.0.0 255.255.0.0
     next
-    edit "fgt-loopbacks-169.255.255.0"
+    edit "fgt_loopbacks"
         set allow-routing enable
         set subnet 169.255.255.0 255.255.255.0
     next
@@ -217,12 +217,12 @@ end
 
 config firewall addrgrp
     edit "dc_subnets"
-        set member "bgw-to-fgt-192.168.0.0" "mgmt-10.100.104.0" "dc-srv-172.16.0.0" "fgt-loopbacks-169.255.255.0" "advpn-tunnels"
+        set member "bgws_to_fgt" "mgmt" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
         set comment "VPN: inet-advpn (Created by VPN wizard)"
         set allow-routing enable
     next
     edit "spoke_subnets"
-        set member "b1_subnet-172.26.0.0" "b2_subnet-172.27.0.0" "dc-srv-172.16.0.0" "fgt-loopbacks-169.255.255.0" "advpn-tunnels"
+        set member "b1_subnets" "b2_subnets" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
     next
 end
 
@@ -268,12 +268,12 @@ config firewall policy
         set service "ALL"
     next
     edit 7
-        set name "advpn_inbound_lo0
+        set name "advpn_inbound_lo0"
         set srcintf "virtual-wan-link"
         set dstintf "lo0"
         set action accept
         set srcaddr "spoke_subnets"
-        set dstaddr "fgt-loopbacks-169.255.255.0"
+        set dstaddr "fgt_loopbacks"
         set schedule "always"
         set service "ALL"
     next
