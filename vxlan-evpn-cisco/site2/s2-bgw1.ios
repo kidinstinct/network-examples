@@ -187,7 +187,7 @@ router bgp 65001
   vrf INTERNET
     address-family ipv4 unicast
     neighbor 192.168.0.17
-      remote-as 64001
+      remote-as 64000
       address-family ipv4 unicast
         send-community
         send-community extended
