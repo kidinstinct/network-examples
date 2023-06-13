@@ -209,7 +209,7 @@ config firewall address
         set allow-routing enable
         set subnet 169.255.255.0 255.255.255.0
     next
-    edit "advpn-tunnels"
+    edit "advpn_tunnels"
         set allow-routing enable
         set subnet 169.10.0.0 255.255.252.0
     next
@@ -217,12 +217,12 @@ end
 
 config firewall addrgrp
     edit "dc_subnets"
-        set member "bgws_to_fgt" "mgmt" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
+        set member "bgws_to_fgt" "mgmt" "dc_srvs" "fgt_loopbacks" "advpn_tunnels"
         set comment "VPN: inet-advpn (Created by VPN wizard)"
         set allow-routing enable
     next
     edit "spoke_subnets"
-        set member "b1_subnets" "b2_subnets" "dc_srvs" "fgt_loopbacks" "advpn-tunnels"
+        set member "b1_subnets" "b2_subnets" "dc_srvs" "fgt_loopbacks" "advpn_tunnels"
     next
 end
 
