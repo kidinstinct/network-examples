@@ -14,20 +14,35 @@ config vpn ipsec phase1-interface
         set interface "port1"
         set peertype any
         set net-device disable
-        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set proposal aes256-sha256
         set add-route disable
         set dpd on-idle
         set wizard-type hub-fortigate-auto-discovery
         set auto-discovery-sender enable
-        set network-overlay enable
-        set psksecret ENC VyY/eEiV+ZHcjY20L1R0RJ1LDaRFNexXRhzP/XCAw6fJfwl7SbXA3PHWQC7Za0vVWoojdAwfYBa3/gow9RMpS+S32AImVX6zf3R6780oHaHpAql64EbDvlrGxwreAib8gMFkQ6/XN0z6VVHz22CgQQFMfIE3d7XrKObc4X5zpO++cwxbLiw+lfPLzUrb235t2l3nAg==
+        set psksecret cisco123
+    next
+    edit "mpls-advpn"
+        set type dynamic
+        set interface "port3"
+        set peertype any
+        set net-device disable
+        set proposal aes256-sha256
+        set add-route disable
+        set dpd on-idle
+        set wizard-type hub-fortigate-auto-discovery
+        set auto-discovery-sender enable
+        set psksecret cisco123
     next
 end
 
 config vpn ipsec phase2-interface
     edit "inet-advpn"
         set phase1name "inet-advpn"
-        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+        set proposal aes256-sha256
+    next
+    edit "mpls-advpn"
+        set phase1name "mpls-advpn"
+        set proposal aes256-sha256
     next
 end
 
@@ -41,32 +56,6 @@ config system interface
         set interface "port1"
         set allowaccess ping
     next
-end
-
-config vpn ipsec phase1-interface
-    edit "mpls-advpn"
-        set type dynamic
-        set interface "port3"
-        set peertype any
-        set net-device disable
-        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
-        set add-route disable
-        set dpd on-idle
-        set wizard-type hub-fortigate-auto-discovery
-        set auto-discovery-sender enable
-        set network-overlay enable
-        set psksecret ENC VyY/eEiV+ZHcjY20L1R0RJ1LDaRFNexXRhzP/XCAw6fJfwl7SbXA3PHWQC7Za0vVWoojdAwfYBa3/gow9RMpS+S32AImVX6zf3R6780oHaHpAql64EbDvlrGxwreAib8gMFkQ6/XN0z6VVHz22CgQQFMfIE3d7XrKObc4X5zpO++cwxbLiw+lfPLzUrb235t2l3nAg==
-    next
-end
-
-config vpn ipsec phase2-interface
-    edit "mpls-advpn"
-        set phase1name "mpls-advpn"
-        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
-    next
-end
-
-config system interface
     edit "mpls-advpn"
         set vdom "root"
         set ip 169.10.3.2 255.255.255.255
@@ -77,7 +66,6 @@ config system interface
         set allowaccess ping
     next
 end
-
 
 config router prefix-list
     edit "WAN-SUBNETS"
@@ -126,6 +114,7 @@ config router bgp
             set route-reflector-client enable
             set additional-path both
             set adv-additional-path 4
+            set link-down-failover enable
         next
         edit "mpls-advpn"
             set allowas-in-enable enable
@@ -137,6 +126,7 @@ config router bgp
             set route-reflector-client enable
             set additional-path both
             set adv-additional-path 4
+            set link-down-failover enable
         next
     end
     config neighbor-range

@@ -13,20 +13,70 @@ config vpn ipsec phase1-interface
         set interface "port1"
         set peertype any
         set net-device enable
-        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
+        set proposal aes256-sha256
         set dpd on-idle
         set wizard-type spoke-fortigate-auto-discovery
         set network-overlay enable
         set auto-discovery-receiver enable
         set remote-gw 172.29.129.1
-        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
+        set psksecret cisco123
+    next
+    edit "s2-inet-advpn"
+        set interface "port1"
+        set peertype any
+        set net-device enable
+        set proposal aes256-sha256
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set network-overlay enable
+        set auto-discovery-receiver enable
+        set remote-gw 172.29.129.2
+        set psksecret cisco123
+    next
+    edit "s1-mpls-advpn"
+        set interface "port3"
+        set peertype any
+        set net-device enable
+        set proposal aes256-sha256
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set auto-discovery-receiver enable
+        set remote-gw 169.0.0.2
+        set psksecret cisco123
+    next
+    edit "s2-mpls-advpn"
+        set interface "port3"
+        set peertype any
+        set net-device enable
+        set proposal aes256-sha256
+        set dpd on-idle
+        set wizard-type spoke-fortigate-auto-discovery
+        set auto-discovery-receiver enable
+        set remote-gw 169.0.0.6
+        set psksecret cisco123
     next
 end
 
 config vpn ipsec phase2-interface
     edit "s1-inet-advpn"
         set phase1name "s1-inet-advpn"
-        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
+        set proposal aes256-sha256
+        set auto-negotiate enable
+    next
+    edit "s2-inet-advpn"
+        set phase1name "s2-inet-advpn"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+    next
+    edit "s1-mpls-advpn"
+        set phase1name "s1-mpls-advpn"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+    next
+    edit "s2-mpls-advpn"
+        set phase1name "s2-mpls-advpn"
+        set proposal aes256-sha256
+        set auto-negotiate enable
     next
 end
 
@@ -39,37 +89,6 @@ config system interface
         set role wan
         set interface "port1"
     next
-end
-
-config vpn ipsec phase1-interface
-    edit "s1-inet-advpn"
-        set add-route disable
-    next
-end
-
-config vpn ipsec phase1-interface
-    edit "s2-inet-advpn"
-        set interface "port1"
-        set peertype any
-        set net-device enable
-        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
-        set dpd on-idle
-        set wizard-type spoke-fortigate-auto-discovery
-        set network-overlay enable
-        set auto-discovery-receiver enable
-        set remote-gw 172.29.129.2
-        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
-    next
-end
-
-config vpn ipsec phase2-interface
-    edit "s2-inet-advpn"
-        set phase1name "s2-inet-advpn"
-        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
-    next
-end
-
-config system interface
     edit "s2-inet-advpn"
         set vdom "root"
         set ip 169.10.2.102 255.255.255.255
@@ -78,36 +97,6 @@ config system interface
         set role wan
         set interface "port1"
     next
-end
-
-config vpn ipsec phase1-interface
-    edit "s2-inet-advpn"
-        set add-route disable
-    next
-end
-
-config vpn ipsec phase1-interface
-    edit "s1-mpls-advpn"
-        set interface "port3"
-        set peertype any
-        set net-device enable
-        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
-        set dpd on-idle
-        set wizard-type spoke-fortigate-auto-discovery
-        set auto-discovery-receiver enable
-        set remote-gw 169.0.0.2
-        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
-    next
-end
-
-config vpn ipsec phase2-interface
-    edit "s1-mpls-advpn"
-        set phase1name "s1-mpls-advpn"
-        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
-    next
-end
-
-config system interface
     edit "s1-mpls-advpn"
         set vdom "root"
         set ip 169.10.1.102 255.255.255.255
@@ -116,36 +105,6 @@ config system interface
         set role wan
         set interface "port3"
     next
-end
-
-config vpn ipsec phase1-interface
-    edit "s1-mpls-advpn"
-        set add-route disable
-    next
-end
-
-config vpn ipsec phase1-interface
-    edit "s2-mpls-advpn"
-        set interface "port3"
-        set peertype any
-        set net-device enable
-        set proposal aes128-sha256 aes256-sha256 aes128-sha1 aes256-sha1
-        set dpd on-idle
-        set wizard-type spoke-fortigate-auto-discovery
-        set auto-discovery-receiver enable
-        set remote-gw 169.0.0.6
-        set psksecret ENC t2qvoc3bo2LY6TWlGw6RHyFobuQ3YUXUM72qf+VIZMnvSN14aOxi44/Rxq3+qlIJfzat1wC492m+MUTFgE8wR0nBnDjJtuvSDVvlTjXEDF68ZPc+GhCc4RIMsrskloOj7q80bU4XyVZItJXoD6Nuqw2ihM+HqZLBFKQSP2iuhLBRzQKlQ2rx9o3Yv4lfRhbpfLmraw==
-    next
-end
-
-config vpn ipsec phase2-interface
-    edit "s2-mpls-advpn"
-        set phase1name "s2-mpls-advpn"
-        set proposal aes128-sha1 aes256-sha1 aes128-sha256 aes256-sha256 aes128gcm aes256gcm chacha20poly1305
-    next
-end
-
-config system interface
     edit "s2-mpls-advpn"
         set vdom "root"
         set ip 169.10.3.102 255.255.255.255
@@ -157,6 +116,15 @@ config system interface
 end
 
 config vpn ipsec phase1-interface
+    edit "s1-inet-advpn"
+        set add-route disable
+    next
+    edit "s2-inet-advpn"
+        set add-route disable
+    next
+    edit "s1-mpls-advpn"
+        set add-route disable
+    next
     edit "s2-mpls-advpn"
         set add-route disable
     next
@@ -208,6 +176,7 @@ config router bgp
             set route-map-in "DENY-WAN-IN"
             set additional-path both
             set adv-additional-path 4
+            set link-down-failover enable
         next
         edit "169.10.1.1"
             set allowas-in-enable enable
@@ -217,6 +186,7 @@ config router bgp
             set route-map-in "DENY-WAN-IN"
             set additional-path both
             set adv-additional-path 4
+            set link-down-failover enable
         next
         edit "169.10.2.2"
             set allowas-in-enable enable
@@ -226,6 +196,7 @@ config router bgp
             set route-map-in "DENY-WAN-IN"
             set additional-path both
             set adv-additional-path 4
+            set link-down-failover enable
         next
         edit "169.10.3.2"
             set allowas-in-enable enable
@@ -235,6 +206,7 @@ config router bgp
             set route-map-in "DENY-WAN-IN"
             set additional-path both
             set adv-additional-path 4
+            set link-down-failover enable
         next
     end
     config network
@@ -277,6 +249,45 @@ config system sdwan
             set interface "s2-mpls-advpn"
             set zone "HUB2-ADVPN"
             set cost 20
+        next
+    end
+    config health-check
+        edit "ping_s1_lo0"
+            set server "169.255.255.1"
+            set members 1 2
+            config sla
+                edit 1
+                    set latency-threshold 7
+                    set packetloss-threshold 1
+                next
+            end
+        next
+        edit "ping_s2_lo0"
+            set server "169.255.255.2"
+            set members 3 4
+            config sla
+                edit 1
+                    set latency-threshold 7
+                    set packetloss-threshold 1
+                next
+            end
+        next
+    end
+    config service
+        edit 1
+            set name "path_to_b1"
+            set mode load-balance
+            set dst "spoke_subnets"
+            set src "spoke_subnets"
+            config sla
+                edit "ping_s1_lo0"
+                    set id 1
+                next
+                edit "ping_s2_lo0"
+                    set id 1
+                next
+            end
+            set priority-members 2 4 1 3
         next
     end
 end
