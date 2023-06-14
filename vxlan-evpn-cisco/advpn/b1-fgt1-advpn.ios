@@ -18,7 +18,7 @@ config vpn ipsec phase1-interface
         set wizard-type spoke-fortigate-auto-discovery
         set network-overlay enable
         set auto-discovery-receiver enable
-        set remote-gw 172.29.129.1
+        set remote-gw 169.0.0.26
         set psksecret cisco123
     next
     edit "s2-inet-advpn"
@@ -30,7 +30,7 @@ config vpn ipsec phase1-interface
         set wizard-type spoke-fortigate-auto-discovery
         set network-overlay enable
         set auto-discovery-receiver enable
-        set remote-gw 172.29.129.2
+        set remote-gw 169.0.0.30
         set psksecret cisco123
     next
     edit "s1-mpls-advpn"
