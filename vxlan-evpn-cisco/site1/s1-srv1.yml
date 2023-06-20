@@ -1,26 +1,29 @@
 #cloud-config
+# vim: syntax=yaml
+# setup hostname, ssk keys, and networking with nopasswd sudo
 hostname: s1-srv1
-manage_etc_hosts: True
-system_info:
-  default_user:
-    name: cisco
-password: cisco
-chpasswd: { expire: False }
-ssh_pwauth: True
-sudo: ALL=(ALL) NOPASSWD:ALL
 ssh_authorized_keys:
-  - your-ssh-pubkey-line-goes-here
+  - ssh-r dlkfjalk
+  - ssh-r dlkfjalk
+write_files:
+  - path: /etc/sudoers.d/90-cloud-init-users
+    content: |
+      %sudo ALL=(ALL) NOPASSWD:ALL
+    permissions: '0440'
+  - path: /etc/hostname
+    content: s1-srv1
+  - path: /etc/hosts
+    content: |
+# configure static networking
 network:
   version: 2
   ethernets:
-    ens2:
-      dhcp4: fasle
-      dhcp6: false
-      set-name: eth0
-      addresses: [198.100.100.101/24]
+    eth0:
+      dhcp4: false
+      addresses: [172.16.100.101/24]
       routes:
         - to: 0.0.0.0/0
-          via: 198.100.100.1
+          via: 172.16.100.1
       nameservers:
         addresses: [1.1.1.1, 1.0.0.1]
-        search: [netlab.local]
+        search: [example.com]
