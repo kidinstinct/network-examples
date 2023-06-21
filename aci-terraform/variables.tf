@@ -17,3 +17,8 @@ variable "cert_private_key" {
   description = "Certificate private key"
   default     = "sandboxapicdc.cisco.com.key"
 }
+
+variable "environment" {
+  description = "Environment"
+  default     = "dev"
+}
