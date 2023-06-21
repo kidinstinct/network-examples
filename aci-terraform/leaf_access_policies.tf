@@ -80,6 +80,7 @@ resource "aci_leaf_access_port_policy_group" "baremetal" {
   description                   = "baremetal"
   annotation                    = "baremetal"
   name_alias                    = "baremetal"
+  relation_infra_rs_att_ent_p   = aci_attachable_access_entity_profile.baremetal.id
   relation_infra_rs_cdp_if_pol  = aci_cdp_interface_policy.cdp_enabled.id
   relation_infra_rs_lldp_if_pol = aci_lldp_interface_policy.lldp_enabled.id
   # relation_infra_rs_mcp_if_pol  = aci_mcp_instance_policy.mcp_enabled.id
@@ -95,12 +96,13 @@ resource "aci_leaf_interface_profile" "baremetal" {
 
 # create access port selector
 resource "aci_access_port_selector" "baremetal" {
-  leaf_interface_profile_dn = aci_leaf_interface_profile.baremetal.id
-  name                      = "baremetal"
-  description               = "baremetal"
-  annotation                = "baremetal"
-  name_alias                = "baremetal"
-  access_port_selector_type = "range"
+  leaf_interface_profile_dn      = aci_leaf_interface_profile.baremetal.id
+  name                           = "baremetal"
+  description                    = "baremetal"
+  annotation                     = "baremetal"
+  name_alias                     = "baremetal"
+  access_port_selector_type      = "range"
+  relation_infra_rs_acc_base_grp = aci_leaf_access_port_policy_group.baremetal.id
 }
 
 # create access port block
@@ -125,16 +127,6 @@ resource "aci_leaf_profile" "leaf_101_102_baremetal" {
   relation_infra_rs_acc_port_p = [
     aci_leaf_interface_profile.baremetal.id,
   ]
-
-  leaf_selector {
-    name                    = "leaf_101_102"
-    switch_association_type = "range"
-    node_block {
-      name  = "leaf_101_102"
-      from_ = "101"
-      to_   = "102"
-    }
-  }
 }
 
 # create leaf selector
@@ -145,4 +137,15 @@ resource "aci_leaf_selector" "leaf_101_102" {
   description             = "leaf_101_102"
   annotation              = "leaf_101_102"
   name_alias              = "leaf_101_102"
+}
+
+# create node block
+resource "aci_node_block" "leaf_101_102" {
+  switch_association_dn = aci_leaf_selector.leaf_101_102.id
+  annotation            = "leaf_101_102"
+  name                  = "leaf_101_102"
+  name_alias            = "leaf_101_102"
+  description           = "leaf_101_102"
+  from_                 = "101"
+  to_                   = "102"
 }
