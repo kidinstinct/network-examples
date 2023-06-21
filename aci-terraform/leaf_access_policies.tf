@@ -59,20 +59,15 @@ resource "aci_lldp_interface_policy" "lldp_enabled" {
   description = "Enable LLDP"
 }
 
-# create mcp enabled policy
-resource "aci_mcp_instance_policy" "mcp_enabled" {
-  admin_st         = "enabled"
-  annotation       = "orchestrator:terraform"
-  name_alias       = "mcp_enabled"
-  description      = "Enable MCP"
-  ctrl             = []
-  init_delay_time  = "180"
-  key              = "mcp_terraform"
-  loop_detect_mult = "3"
-  loop_protect_act = "port-disable"
-  tx_freq          = "2"
-  tx_freq_msec     = "0"
+# create miscabling protocol interface enabled policy
+resource "aci_miscabling_protocol_interface_policy" "name" {
+  name        = "mcp_enabled"
+  admin_st    = "enabled"
+  annotation  = "tag:mcp"
+  name_alias  = "mcp_enabled"
+  description = "Enable MCP"
 }
+
 
 # create leaf access policy group
 resource "aci_leaf_access_port_policy_group" "baremetal" {
@@ -83,7 +78,7 @@ resource "aci_leaf_access_port_policy_group" "baremetal" {
   relation_infra_rs_att_ent_p   = aci_attachable_access_entity_profile.baremetal.id
   relation_infra_rs_cdp_if_pol  = aci_cdp_interface_policy.cdp_enabled.id
   relation_infra_rs_lldp_if_pol = aci_lldp_interface_policy.lldp_enabled.id
-  # relation_infra_rs_mcp_if_pol  = aci_mcp_instance_policy.mcp_enabled.id
+  relation_infra_rs_mcp_if_pol  = aci_miscabling_protocol_interface_policy.name.id
 }
 
 # create leaf interface profile
