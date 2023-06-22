@@ -1,4 +1,9 @@
-variable "aci_password" {
+variable "apic_username" {
+  description = "Username for APIC"
+  default     = "admin"
+}
+
+variable "apic_password" {
   description = "Password for APIC"
   default     = "cisco123"
 }
