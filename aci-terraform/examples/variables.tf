@@ -23,6 +23,11 @@ variable "cert_private_key" {
   default     = "sandboxapicdc.cisco.com.key"
 }
 
+variable "is_insecure" {
+  description = "Insecure flag"
+  default     = true
+}
+
 variable "environment" {
   description = "Environment"
   default     = "dev"
