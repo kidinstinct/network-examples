@@ -35,7 +35,7 @@ locals {
 
 module "aci" {
   source    = "../modules/access_policies"
-  providers = { aci = aci.aci5_cert }
+  providers = { aci = aci.aci6_cert }
 
   environment = var.environment
   vlan_pools  = local.access_policies.vlan_pools
