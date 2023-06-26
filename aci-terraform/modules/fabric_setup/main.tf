@@ -9,7 +9,7 @@ terraform {
 
 # create fabric node member
 resource "aci_fabric_node_member" "this" {
-  for_each    = length(var.fabric_nodes) > 0 ? { for v in var.fabric_nodes : v.node_id => v } : {}
+  for_each    = length(var.fabric_nodes) > 0 ? { for k, v in var.fabric_nodes : k => v } : {}
   serial      = each.value.serial
   name        = each.value.name
   name_alias  = each.value.name_alias
@@ -25,8 +25,8 @@ resource "aci_fabric_node_member" "this" {
 
 # create fabric wide settings
 resource "aci_fabric_wide_settings" "this" {
-  for_each                    = length(var.fabric_wide_settings) > 0 ? { for v in var.fabric_wide_settings : v.name => v } : {}
-  name                        = each.value.name != "" ? each.value.name : "default"
+  for_each                    = length(var.fabric_wide_settings) > 0 ? { for k, v in var.fabric_wide_settings : k => v } : {}
+  name                        = each.value.name
   annotation                  = each.value.annotation != "" ? each.value.annotation : ""
   description                 = each.value.description != "" ? each.value.description : ""
   name_alias                  = each.value.name_alias != "" ? each.value.name_alias : ""
@@ -37,4 +37,27 @@ resource "aci_fabric_wide_settings" "this" {
   restrict_infra_vlan_traffic = each.value.restrict_infra_vlan_traffic != "" ? each.value.restrict_infra_vlan_traffic : "no"
   unicast_xr_ep_learn_disable = each.value.unicast_xr_ep_learn_disable != "" ? each.value.unicast_xr_ep_learn_disable : "no"
   validate_overlapping_vlans  = each.value.validate_overlapping_vlans != "" ? each.value.validate_overlapping_vlans : "no"
+}
+
+# create route reflector bgp as-number using rest-managed resource
+resource "aci_rest_managed" "bgp_as" {
+  for_each   = var.bgp_as_info
+  dn         = "uni/fabric/bgpInstP-default/as"
+  class_name = "bgpAsP"
+
+  content = {
+    "${each.key}" = each.value
+  }
+}
+
+# create route reflector spines
+resource "aci_rest_managed" "bgp_rrs" {
+  for_each   = length(var.bgp_rrs) > 0 ? { for k, v in var.bgp_rrs : k => v } : {}
+  dn         = "uni/fabric/bgpInstP-default/rr/node-${each.value.node_id}"
+  class_name = "bgpRRNodePEp"
+
+  content = {
+    "id"    = each.value.node_id
+    "podId" = each.value.pod_id
+  }
 }

@@ -1,7 +1,7 @@
 variable "fabric_nodes" {
   description = "List of fabric nodes to be created"
   type = list(object({
-    serial      = optional(string)
+    serial      = string
     name        = optional(string)
     name_alias  = optional(string)
     annotation  = optional(string)
@@ -19,7 +19,7 @@ variable "fabric_nodes" {
 variable "fabric_wide_settings" {
   description = "List of fabric wide settings to be created"
   type = list(object({
-    name                        = string
+    name                        = optional(string)
     annotation                  = optional(string)
     description                 = optional(string)
     name_alias                  = optional(string)
@@ -31,4 +31,29 @@ variable "fabric_wide_settings" {
     unicast_xr_ep_learn_disable = optional(string)
     validate_overlapping_vlans  = optional(string)
   }))
+  default = []
+}
+
+variable "bgp_as_info" {
+  description = "BGP AS Info to be created"
+  type = object({
+    asn        = string
+    name       = optional(string)
+    annotation = optional(string)
+    nameAlias  = optional(string)
+  })
+}
+
+variable "bgp_rrs" {
+  description = "List of BGP Route Reflectors to be created"
+  type = list(object({
+    node_id     = string
+    name        = optional(string)
+    annotation  = optional(string)
+    description = optional(string)
+    name_alias  = optional(string)
+    pod_id      = optional(string)
+    role        = optional(string)
+  }))
+  default = []
 }
