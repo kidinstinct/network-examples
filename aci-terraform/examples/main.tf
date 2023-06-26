@@ -98,7 +98,7 @@ module "fabric_setup" {
   }]
 }
 
-module "aci" {
+module "access_policies" {
   source    = "../modules/access_policies"
   providers = { aci = aci.aci6_cert }
 
