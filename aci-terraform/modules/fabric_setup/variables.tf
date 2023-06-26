@@ -19,10 +19,16 @@ variable "fabric_nodes" {
 variable "fabric_wide_settings" {
   description = "List of fabric wide settings to be created"
   type = list(object({
-    name                 = optional(string)
-    annotation           = optional(string)
-    description          = optional(string)
-    name_alias           = optional(string)
-    disable_ep_dampening = optional(string)
+    name                        = string
+    annotation                  = optional(string)
+    description                 = optional(string)
+    name_alias                  = optional(string)
+    disable_ep_dampening        = optional(string)
+    domain_validation           = optional(string)
+    enable_remote_leaf_direct   = optional(string)
+    enforce_subnet_check        = optional(string)
+    restrict_infra_vlan_traffic = optional(string)
+    unicast_xr_ep_learn_disable = optional(string)
+    validate_overlapping_vlans  = optional(string)
   }))
 }

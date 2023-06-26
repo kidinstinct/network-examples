@@ -85,6 +85,17 @@ module "fabric_setup" {
       role        = "spine"
       serial      = "TEP-1-104"
   }]
+
+  fabric_wide_settings = [{
+    name                        = "fabric_wide_settings"
+    disable_ep_dampening        = "yes"
+    domain_validation           = "yes"
+    enable_remote_leaf_direct   = "yes"
+    enforce_subnet_check        = "yes"
+    restrict_infra_vlan_traffic = "yes"
+    unicast_xr_ep_learn_disable = "yes"
+    validate_overlapping_vlans  = "yes"
+  }]
 }
 
 module "aci" {
