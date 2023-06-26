@@ -9,7 +9,7 @@ terraform {
 
 # create vlan pool
 resource "aci_vlan_pool" "this" {
-  for_each    = length(var.vlan_pools) > 0 ? { for k, v in var.vlan_pools : k => v } : {}
+  for_each    = length(var.vlan_pools) > 0 ? { for v in var.vlan_pools : v.name => v } : {}
   name        = each.value.name
   name_alias  = each.value.name_alias
   annotation  = each.value.annotation
