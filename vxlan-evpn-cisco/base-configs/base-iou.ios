@@ -10,7 +10,7 @@ enable secret cisco
 username cisco privilege 15 secret cisco
 !
 !
-interface range Eth1/0 - 3, Eth1/0 - 3, Eth2/0 - 3, Eth3/0 - 3
+interface range Eth0/0 - 3, Eth1/0 - 3, Eth2/0 - 3, Eth3/0 - 3
  shutdown
 !
 no ip http server
