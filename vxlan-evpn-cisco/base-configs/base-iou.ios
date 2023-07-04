@@ -1,0 +1,34 @@
+hostname iou-v2018
+!
+no ip domain lookup
+ip domain name netlab.local
+!
+!
+enable secret cisco
+!
+!
+username cisco privilege 15 secret cisco
+!
+!
+interface range Eth1/0 - 3, Eth1/0 - 3, Eth2/0 - 3, Eth3/0 - 3
+switchport
+ shutdown
+!
+no ip http server
+no ip http secure-server
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ no login
+ stopbits 1
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+end
+wr
