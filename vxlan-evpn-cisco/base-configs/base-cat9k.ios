@@ -8,14 +8,6 @@ ip domain name netlab.local
 enable secret cisco
 username cisco privilege 15 secret cisco
 !
-!
-interface Vlan1
- no ip address
- shutdown
-!
-interface range GigabitEthernet1/0/1 - 8
- shutdown
-!
 no ip http server
 no ip http secure-server
 ip ssh bulk-mode 131072
@@ -25,7 +17,7 @@ line con 0
   exec-timeout 0 0
   privilege level 15
   logging synchronous
-  login local
+  no login
   stopbits 1
 line vty 0 4
   exec-timeout 60 0

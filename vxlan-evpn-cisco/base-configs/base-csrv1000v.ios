@@ -9,11 +9,6 @@ enable secret cisco
 !
 username cisco privilege 15 secret cisco
 !
-!
-interface range GigabitEthernet1 - 4
- no ip address
- shutdown
-!
 no ip http server
 no ip http secure-server
 !
