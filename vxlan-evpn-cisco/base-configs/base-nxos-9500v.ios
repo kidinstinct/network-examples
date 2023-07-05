@@ -7,11 +7,6 @@ username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7 
 no ip domain-lookup
 ip domain-name netlab.local
 
-interface eth1/1-64
-  no switchport
-  mtu 9216
-  shutdown
-
 cli alias name wr copy run start
 
 line console
@@ -20,3 +15,4 @@ line vty
   exec-timeout 60
   exit
 
+boot nxos bootflash:nxos64-cs.10.3.3.F.bin
