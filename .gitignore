@@ -222,3 +222,5 @@ override.tf.json
 terraform.rc
 *.tfplan
 plan.txt
+# ignore backup directory
+backup/

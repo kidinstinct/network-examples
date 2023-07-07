@@ -10,25 +10,21 @@ enable secret cisco
 username cisco privilege 15 secret cisco
 !
 !
-interface range GigabitEthernet1/0/1 - 8
- no ip address
- shutdown
-!
 no ip http server
 no ip http secure-server
 !
 !
 line con 0
- exec-timeout 0 0
- privilege level 15
- logging synchronous
- login local
- stopbits 1
+  exec-timeout 0 0
+  privilege level 15
+  logging synchronous
+  no login
+  stopbits 1
 line vty 0 4
- exec-timeout 60 0
- privilege level 15
- logging synchronous
- login local
- transport input ssh
+  exec-timeout 60 0
+  privilege level 15
+  logging synchronous
+  login local
+  transport input ssh
 end
 wr
