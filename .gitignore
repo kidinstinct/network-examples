@@ -224,3 +224,5 @@ terraform.rc
 plan.txt
 # ignore backup directory
 backup/
+
+*.retry
