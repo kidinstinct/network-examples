@@ -8,6 +8,7 @@ enable secret cisco
 !
 !
 username cisco privilege 15 secret cisco
+username ndfc privilege 15 secret C1sco123
 !
 !
 no ip http server
