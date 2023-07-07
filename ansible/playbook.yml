@@ -1,0 +1,67 @@
+# create an ansible playbook to create username and password as network-admin for a range of
+# nexus 9000 switchesand save the running config to startup config
+
+---
+- name: Configure Nexus 9000 switches
+  hosts: nexus_switches
+  gather_facts: false
+
+  vars:
+    ansible_network_os: cisco.nxos.nxos
+    # ansible_connection: ansible.netcommon.network_cli
+    ansible_connection: ansible.netcommon.httpapi
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_port: 8443
+    ansible_httpapi_validate_certs: false
+    ansible_user: "{{ lookup('env', 'NXOS_USERNAME') }}"
+    ansible_password: "{{ lookup('env', 'NXOS_PASSWORD') }}"
+    new_username: "{{ lookup('env', 'NEW_USERNAME') }}"
+    new_password: "{{ lookup('env', 'NEW_PASSWORD') }}"
+
+  tasks:
+    - name: Configure username and password
+      cisco.nxos.nxos_user:
+        name: '{{ new_username }}'
+        configured_password: '{{ new_password }}'
+        role: network-admin
+        state: present
+      register: output
+
+    # - name: Enable bgp feature
+    #   cisco.nxos.nxos_feature:
+    #     feature: bgp
+    #     state: enabled
+    #   register: output
+
+    # - name: Configure bgp
+    #   cisco.nxos.nxos_bgp_global:
+    #     config:
+    #       as_number: 65000
+    #       router_id: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    #       log_neighbor_changes: true
+    #       bestpath:
+    #         as_path:
+    #           multipath_relax: true
+    #         cost_community_ignore: true
+    #         compare_routerid: true
+    #         always_compare_med: true
+    #         compare_neighborid: true
+    #         med:
+    #           missing_as_worst: true
+    #       graceful_restart:
+    #         helper: true
+    #         restart_time: 120
+    #         set: true
+    #         stalepath_time: 360
+    #     state: merged
+    #   register: output
+
+    - name: Save running configuration to startup configuration and backup
+      cisco.nxos.nxos_config:
+        backup: true
+        save_when: modified
+      register: output
+
+    - name: Print output
+      ansible.builtin.debug:
+        var: output.stdout_lines
