@@ -10,9 +10,25 @@ enable secret cisco
 username cisco privilege 15 secret cisco
 username ndfc privilege 15 secret C1sco123
 !
+vrf definition mgmt
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+interface GigabitEthernet8
+ description management
+ vrf forwarding mgmt
+ ip address 10.100.105.25 255.255.255.0
+ negotiation auto
+ no shutdown
 !
 no ip http server
 no ip http secure-server
+!
+!
+ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.105.1
+ip ssh version 2
 !
 !
 line con 0
