@@ -1,31 +1,24 @@
-# create an ansible playbook to create username and password as network-admin for a range of
-# nexus 9000 switchesand save the running config to startup config
-
 ---
 - name: Configure Nexus 9000 switches
-  hosts: nexus_switches
+  hosts: dc1_leafs
   gather_facts: false
 
-  vars:
-    ansible_network_os: cisco.nxos.nxos
-    # ansible_connection: ansible.netcommon.network_cli
-    ansible_connection: ansible.netcommon.httpapi
-    ansible_httpapi_use_ssl: true
-    ansible_httpapi_port: 8443
-    ansible_httpapi_validate_certs: false
-    ansible_user: "{{ lookup('env', 'NXOS_USERNAME') }}"
-    ansible_password: "{{ lookup('env', 'NXOS_PASSWORD') }}"
-    new_username: "{{ lookup('env', 'NEW_USERNAME') }}"
-    new_password: "{{ lookup('env', 'NEW_PASSWORD') }}"
-
   tasks:
-    - name: Configure username and password
-      cisco.nxos.nxos_user:
-        name: '{{ new_username }}'
-        configured_password: '{{ new_password }}'
-        role: network-admin
-        state: present
+    - name: Gather VLAN information
+      cisco.nxos.nxos_facts:
+        gather_subset:
+          - '!all'
+          - '!hardware'
+          - '!min'
+        gather_network_resources:
+          - vlans
       register: output
+
+    - name: Store VLAN facts to file
+      ansible.builtin.copy:
+        content: '{{ ansible_network_resources | to_nice_yaml }}'
+        dest: '{{ playbook_dir }}/vlan_facts.yml'
+        mode: '0644'
 
     # - name: Enable bgp feature
     #   cisco.nxos.nxos_feature:
@@ -56,12 +49,12 @@
     #     state: merged
     #   register: output
 
-    - name: Save running configuration to startup configuration and backup
-      cisco.nxos.nxos_config:
-        backup: true
-        save_when: modified
-      register: output
+    # - name: Save running configuration to startup configuration and backup
+    #   cisco.nxos.nxos_config:
+    #     backup: true
+    #     save_when: modified
+    #   register: output
 
     - name: Print output
       ansible.builtin.debug:
-        var: output.stdout_lines
+        var: output
