@@ -4,7 +4,7 @@
   gather_facts: false
 
   roles:
-    - dc1/wanrtrs/intf_config
+    - dc1_wan_intf_config
 
   tasks:
     - name: Print output
