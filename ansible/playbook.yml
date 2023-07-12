@@ -1,7 +1,6 @@
 ---
 - name: Configure DC1 WAN Routers
   hosts: dc1_wan_routers
-  # connection: ansible.netcommon.network_cli
   gather_facts: false
 
   roles:
