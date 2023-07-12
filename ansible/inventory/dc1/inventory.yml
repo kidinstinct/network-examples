@@ -57,3 +57,21 @@ dc1_routers:
     ansible_user: "{{ lookup('env', 'IOS_USERNAME') }}"
     ansible_password: "{{ lookup('env', 'IOS_PASSWORD') }}"
     ansible_connection: ansible.netcommon.network_cli
+
+campus_bb_routers:
+  hosts:
+    csr-42:
+      ansible_host: 10.100.105.42
+    csr-44:
+      ansible_host: 10.100.105.44
+    csr-45:
+      ansible_host: 10.100.105.45
+
+campus_routers:
+  children:
+    campus_bb_routers:
+  vars:
+    ansible_network_os: cisco.ios.ios
+    ansible_user: "{{ lookup('env', 'IOS_USERNAME') }}"
+    ansible_password: "{{ lookup('env', 'IOS_PASSWORD') }}"
+    ansible_connection: ansible.netcommon.network_cli

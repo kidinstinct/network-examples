@@ -4,3 +4,29 @@ ansible_network_os: cisco.ios.ios
 loopback_ips:
   s1-wan30: '100.100.0.30/32'
   s1-wan31: '100.100.0.31/32'
+
+vrfs:
+  - name: TENANT1
+    rd: 65001:2000
+    route_both_ipv4:
+      - 65001:2000
+    interfaces:
+      - GigabitEthernet1.2000
+  - name: TENANT2
+    rd: 65001:2001
+    route_both_ipv4:
+      - 65001:2001
+    interfaces:
+      - GigabitEthernet1.2001
+
+vrf_ips:
+  s1-wan30:
+    TENANT1: '100.13.30.2 255.255.255.252'
+    TENANT2: '100.13.30.2 255.255.255.252'
+  s1-wan31:
+    TENANT1: '100.15.31.2 255.255.255.252'
+    TENANT2: '100.15.31.2 255.255.255.252'
+
+mgmt_ips:
+  s1-wan30: '10.100.105.74/24'
+  s1-wan31: '10.100.105.75/24'

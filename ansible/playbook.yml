@@ -9,4 +9,6 @@
   tasks:
     - name: Print output
       ansible.builtin.debug:
-        var: output
+        var:
+          - interfaces
+          - vrfs

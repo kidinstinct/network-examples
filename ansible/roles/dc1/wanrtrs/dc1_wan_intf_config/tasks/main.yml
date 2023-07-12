@@ -1,9 +1,58 @@
 ---
 # tasks file for roles/dc1/wanrtrs/intf_config
-- name: Configure loopback interfaces
+- name: Configure interfaces
+  cisco.ios.ios_interfaces:
+    config:
+      - name: GigabitEthernet1
+        mtu: 9000
+        enabled: true
+      - name: GigabitEthernet1.2000
+        enabled: true
+      - name: GigabitEthernet1.2001
+        enabled: true
+
+- name: Create encapsulation on sub-interfaces Gi.2000
+  cisco.ios.ios_config:
+    lines:
+      - 'encapsulation dot1Q 2000'
+      - 'encapsulation dot1Q 2001'
+    parents:
+      - interface GigabitEthernet1.2000
+      - interface GigabitEthernet1.2001
+
+# - name: Create encapsulation on sub-interfaces Gi.2001
+#   cisco.ios.ios_config:
+#     lines:
+#       - 'encapsulation dot1Q 2001'
+#     parents:
+#       - interface GigabitEthernet1.2001
+
+- name: Configure TENANT1 VRF
+  cisco.ios.ios_vrf:
+    vrfs: '{{ vrfs }}'
+  register: vrfs
+
+- name: Configure L3 interfaces
   cisco.ios.ios_l3_interfaces:
     config:
-      - name: loopback0
+      - name: Loopback0
         ipv4:
           - address: '{{ loopback_ips[inventory_hostname] }}'
             secondary: false
+      - name: GigabitEthernet1.2000
+        ipv4:
+          - address: '{{ vrf_ips[inventory_hostname]["TENANT1"] }}'
+            secondary: false
+      - name: GigabitEthernet1.2001
+        ipv4:
+          - address: '{{ vrf_ips[inventory_hostname]["TENANT2"] }}'
+            secondary: false
+      - name: GigabitEthernet16
+        ipv4:
+          - address: '{{ mgmt_ips[inventory_hostname] }}'
+            secondary: true
+  register: interfaces
+
+- name: Save running config
+  cisco.ios.ios_config:
+    save_when: modified
