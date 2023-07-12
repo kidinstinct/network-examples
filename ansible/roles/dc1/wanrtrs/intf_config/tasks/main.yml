@@ -1,0 +1,9 @@
+---
+# tasks file for roles/dc1/wanrtrs/intf_config
+- name: Configure loopback interfaces
+  cisco.ios.ios_l3_interfaces:
+    config:
+      - name: loopback0
+        ipv4:
+          - address: '{{ loopback_ips[inventory_hostname] }}'
+            secondary: false

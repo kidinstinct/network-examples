@@ -1,0 +1,59 @@
+---
+dc1_leafs:
+  hosts:
+    s1-leaf1:
+      ansible_host: 10.100.105.13
+    s1-leaf2:
+      ansible_host: 10.100.105.14
+    s1-leaf3:
+      ansible_host: 10.100.105.15
+
+dc1_vpc_leafs:
+  hosts:
+    s1-leaf1:
+    s1-leaf3:
+
+dc1_spines:
+  hosts:
+    s1-spine1:
+      ansible_host: 10.100.105.11
+    s1-spine2:
+      ansible_host: 10.100.105.12
+
+dc1_border_gateways:
+  hosts:
+    s1-bgw1:
+      ansible_host: 10.100.105.16
+    s1-bgw2:
+      ansible_host: 10.100.105.17
+
+dc1_network:
+  children:
+    dc1_leafs:
+    dc1_spines:
+    dc1_border_gateways:
+  vars:
+    ansible_network_os: cisco.nxos.nxos
+    ansible_user: "{{ lookup('env', 'NXOS_USERNAME') }}"
+    ansible_password: "{{ lookup('env', 'NXOS_PASSWORD') }}"
+    # ansible_connection: ansible.netcommon.network_cli
+    ansible_connection: ansible.netcommon.httpapi
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_port: 443
+    ansible_httpapi_validate_certs: false
+
+dc1_wan_routers:
+  hosts:
+    s1-wan30:
+      ansible_host: 10.100.105.30
+    s1-wan31:
+      ansible_host: 10.100.105.31
+
+dc1_routers:
+  children:
+    dc1_wan_routers:
+  vars:
+    ansible_network_os: cisco.ios.ios
+    ansible_user: "{{ lookup('env', 'IOS_USERNAME') }}"
+    ansible_password: "{{ lookup('env', 'IOS_PASSWORD') }}"
+    ansible_connection: ansible.netcommon.network_cli
