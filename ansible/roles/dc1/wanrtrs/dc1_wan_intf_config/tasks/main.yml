@@ -3,27 +3,32 @@
 - name: Configure interfaces
   cisco.ios.ios_interfaces:
     config:
-      - name: '{{ vrf_intfs[0] }}'
+      - name: '{{ int_intfs[0] }}'
         mtu: 9000
         enabled: true
-      - name: '{{ vrf_intfs[1] }}'
+      - name: '{{ int_intfs[1] }}'
         enabled: true
-      - name: '{{ vrf_intfs[2] }}'
+      - name: '{{ int_intfs[2] }}'
         enabled: true
 
-- name: Create encapsulation on sub-interfaces
+- name: Create encapsulation on sub-interface for {{ int_intfs[1] }}
   cisco.ios.ios_config:
     lines:
-      - 'encapsulation dot1Q {{ vrf_vlans[0] }}'
-      - 'encapsulation dot1Q {{ vrf_vlans[1] }}'
+      - 'encapsulation dot1Q {{ int_vlans[0] }}'
     parents:
-      - interface {{ vrf_intfs[1] }}
-      - interface {{ vrf_intfs[2] }}
+      - interface {{ int_intfs[1] }}
 
-- name: Configure VRFs
-  cisco.ios.ios_vrf:
-    vrfs: '{{ vrfs }}'
-  register: vrfs
+- name: Create encapsulation on sub-interface for {{ int_intfs[2] }}
+  cisco.ios.ios_config:
+    lines:
+      - 'encapsulation dot1Q {{ int_vlans[1] }}'
+    parents:
+      - interface {{ int_intfs[2] }}
+
+# - name: Configure VRFs
+#   cisco.ios.ios_vrf:
+#     vrfs: '{{ vrfs }}'
+#   register: vrfs
 
 - name: Configure L3 interfaces
   cisco.ios.ios_l3_interfaces:
@@ -32,18 +37,14 @@
         ipv4:
           - address: '{{ loopback_ips[inventory_hostname] }}'
             secondary: false
-      - name: '{{ vrf_intfs[1] }}'
+      - name: '{{ int_intfs[1] }}'
         ipv4:
-          - address: '{{ vrf_ips[inventory_hostname]["TENANT1"] }}'
+          - address: '{{ int_ips[inventory_hostname]["TENANT1"] }}'
             secondary: false
-      - name: '{{ vrf_intfs[2] }}'
+      - name: '{{ int_intfs[2] }}'
         ipv4:
-          - address: '{{ vrf_ips[inventory_hostname]["TENANT2"] }}'
+          - address: '{{ int_ips[inventory_hostname]["TENANT2"] }}'
             secondary: false
-      - name: GigabitEthernet16
-        ipv4:
-          - address: '{{ mgmt_ips[inventory_hostname] }}'
-            secondary: true
   register: interfaces
 
 - name: Save running config
